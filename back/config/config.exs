@@ -7,20 +7,20 @@
 # General application configuration
 import Config
 
-config :hello,
-  ecto_repos: [Hello.Repo],
+config :back,
+  ecto_repos: [Back.Repo],
   generators: [timestamp_type: :utc_datetime]
 
 # Configures the endpoint
-config :hello, HelloWeb.Endpoint,
+config :back, BackWeb.Endpoint,
   url: [host: "localhost"],
   adapter: Phoenix.Endpoint.Cowboy2Adapter,
   render_errors: [
-    formats: [html: HelloWeb.ErrorHTML, json: HelloWeb.ErrorJSON],
+    formats: [html: BackWeb.ErrorHTML, json: BackWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: Hello.PubSub,
-  live_view: [signing_salt: "ed7dHnIc"]
+  pubsub_server: Back.PubSub,
+  live_view: [signing_salt: "1lMyFbzd"]
 
 # Configures the mailer
 #
@@ -29,7 +29,7 @@ config :hello, HelloWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :hello, Hello.Mailer, adapter: Swoosh.Adapters.Local
+config :back, Back.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,

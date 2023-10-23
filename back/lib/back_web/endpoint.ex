@@ -1,13 +1,13 @@
-defmodule HelloWeb.Endpoint do
-  use Phoenix.Endpoint, otp_app: :hello
+defmodule BackWeb.Endpoint do
+  use Phoenix.Endpoint, otp_app: :back
 
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.
   # Set :encryption_salt if you would also like to encrypt it.
   @session_options [
     store: :cookie,
-    key: "_hello_key",
-    signing_salt: "NtfdQTfY",
+    key: "_back_key",
+    signing_salt: "1UKCpv7v",
     same_site: "Lax"
   ]
 
@@ -19,9 +19,9 @@ defmodule HelloWeb.Endpoint do
   # when deploying your static files in production.
   plug Plug.Static,
     at: "/",
-    from: :hello,
+    from: :back,
     gzip: false,
-    only: HelloWeb.static_paths()
+    only: BackWeb.static_paths()
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
@@ -29,7 +29,7 @@ defmodule HelloWeb.Endpoint do
     socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket
     plug Phoenix.LiveReloader
     plug Phoenix.CodeReloader
-    plug Phoenix.Ecto.CheckRepoStatus, otp_app: :hello
+    plug Phoenix.Ecto.CheckRepoStatus, otp_app: :back
   end
 
   plug Phoenix.LiveDashboard.RequestLogger,
@@ -47,5 +47,5 @@ defmodule HelloWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
-  plug HelloWeb.Router
+  plug BackWeb.Router
 end

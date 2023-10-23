@@ -1,6 +1,6 @@
-defmodule Hello do
+defmodule Back do
   @moduledoc """
-  Hello keeps the contexts that define your domain
+  Back keeps the contexts that define your domain
   and business logic.
 
   Contexts are also responsible for managing your data, regardless

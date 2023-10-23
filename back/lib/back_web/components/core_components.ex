@@ -1,4 +1,4 @@
-defmodule HelloWeb.CoreComponents do
+defmodule BackWeb.CoreComponents do
   @moduledoc """
   Provides core UI components.
 
@@ -17,7 +17,7 @@ defmodule HelloWeb.CoreComponents do
   use Phoenix.Component
 
   alias Phoenix.LiveView.JS
-  import HelloWeb.Gettext
+  import BackWeb.Gettext
 
   @doc """
   Renders a modal.
@@ -659,9 +659,9 @@ defmodule HelloWeb.CoreComponents do
     # with our gettext backend as first argument. Translations are
     # available in the errors.po file (as we use the "errors" domain).
     if count = opts[:count] do
-      Gettext.dngettext(HelloWeb.Gettext, "errors", msg, msg, count, opts)
+      Gettext.dngettext(BackWeb.Gettext, "errors", msg, msg, count, opts)
     else
-      Gettext.dgettext(HelloWeb.Gettext, "errors", msg, opts)
+      Gettext.dgettext(BackWeb.Gettext, "errors", msg, opts)
     end
   end
 
