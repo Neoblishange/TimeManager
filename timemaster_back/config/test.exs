@@ -17,14 +17,8 @@ config :timemaster_back, TimemasterBack.Repo,
 # you can enable the server option below.
 config :timemaster_back, TimemasterBackWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
-  secret_key_base: "YSbc00kK/hy1Dz8Nv0i2koR9rtz1IDK6Cf/tCAeSzdyDCjxr4oshbQgyHPcTawWP",
+  secret_key_base: "bTjVSIDGMdtXo/1MWaVOYzRcwLzdXlzXa9X4Kgl4c+qxT66MUqgXNwjM903JDuYo",
   server: false
-
-# In test we don't send emails.
-config :timemaster_back, TimemasterBack.Mailer, adapter: Swoosh.Adapters.Test
-
-# Disable swoosh api client as it is only required for production adapters.
-config :swoosh, :api_client, false
 
 # Print only warnings and errors during test
 config :logger, level: :warning

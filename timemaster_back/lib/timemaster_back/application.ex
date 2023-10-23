@@ -12,8 +12,6 @@ defmodule TimemasterBack.Application do
       TimemasterBack.Repo,
       {DNSCluster, query: Application.get_env(:timemaster_back, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: TimemasterBack.PubSub},
-      # Start the Finch HTTP client for sending emails
-      {Finch, name: TimemasterBack.Finch},
       # Start a worker by calling: TimemasterBack.Worker.start_link(arg)
       # {TimemasterBack.Worker, arg},
       # Start to serve requests, typically the last entry
