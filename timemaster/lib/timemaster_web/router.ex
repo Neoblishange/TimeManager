@@ -7,6 +7,8 @@ defmodule TimemasterWeb.Router do
 
   scope "/api", TimemasterWeb do
     pipe_through :api
-      resources "/users", UserController, except: [:new, :edit]
+      resources "/users", UserController, except: [:index, :new, :edit]
+      resources "/clocks", WorkingTimeController, except: [:index, :new, :edit, :update, :delete]
+      resources "/workingtimes", WorkingTimeController, except: [:new, :edit]
   end
 end
