@@ -26,4 +26,11 @@
 </template>
 
 <script setup>
+import UserProvider from '@/store/User.ts';
+
+
+const user = new UserProvider()
+
+console.log("user",user);
+
 </script>
