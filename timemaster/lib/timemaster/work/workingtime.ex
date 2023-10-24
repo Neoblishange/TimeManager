@@ -7,7 +7,7 @@ defmodule Timemaster.Work.Workingtime do
   schema "workingtimes" do
     field :start, :utc_datetime
     field :end, :utc_datetime
-    field :user, :binary_id
+    belongs_to :user, Timemaster.Accounts.User
 
     timestamps(type: :utc_datetime)
   end
@@ -15,7 +15,7 @@ defmodule Timemaster.Work.Workingtime do
   @doc false
   def changeset(workingtime, attrs) do
     workingtime
-    |> cast(attrs, [:start, :end])
-    |> validate_required([:start, :end])
+    |> cast(attrs, [:start, :end, :user_id])
+    |> validate_required([:start, :end, :user_id])
   end
 end

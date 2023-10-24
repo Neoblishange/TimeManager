@@ -1,6 +1,13 @@
 defmodule TimemasterWeb.UserJSON do
   alias Timemaster.Accounts.User
 
+  @doc"""
+  Renders one user by params
+  """
+  def get_user_by_params(%{user: user}) do
+    %{data: data(user)}
+  end
+
   @doc """
   Renders a list of users.
   """
@@ -19,7 +26,8 @@ defmodule TimemasterWeb.UserJSON do
     %{
       id: user.id,
       username: user.username,
-      email: user.email
+      email: user.email,
+      roles: user.roles
     }
   end
 end
