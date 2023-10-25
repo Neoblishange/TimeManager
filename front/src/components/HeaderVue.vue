@@ -2,10 +2,9 @@
   <div
     class="fixed top-0 w-full bg-[#fcb795] h-[100px] p-5 border-b-2 border-gray-200 flex items-center justify-between"
   >
-
-  <router-link to="/">
-    <p class="text-[#3b3fb8] text-2xl font-extrabold">Time Master</p>
-  </router-link>
+    <router-link to="/">
+      <p class="text-[#3b3fb8] text-2xl font-extrabold">Time Master</p>
+    </router-link>
     <div class="flex gap-3">
       <router-link to="/register">
         <button
@@ -25,11 +24,10 @@
   </div>
 </template>
 
-<script setup>
-import UserProvider from '@/store/User.ts';
+<script setup lang="ts">
+import UserProvider from "../store/User.ts";
 
-
-const user = new UserProvider()
+const user  = new UserProvider();
 
 console.log("user",user);
 

@@ -1,3 +1,21 @@
+<script setup lang="ts">
+import { ref } from "vue";
+import HeaderVue from "../components/HeaderVue.vue";
+
+const formStep = ref(0);
+const MAX_STEP = ref(2);
+const showPassword = ref(false);
+const showConfirmation = ref(false);
+
+const prevStep = () => {
+  if (formStep.value > 0) formStep.value--;
+};
+
+const nextStep = () => {
+  if (formStep.value < MAX_STEP.value) formStep.value++;
+};
+</script>
+
 <template>
   <HeaderVue />
 
@@ -15,23 +33,12 @@
           >
             <span class="underline">Informations utilisateurs :</span>
             <div class="w-full">
-              <label for="lastName" class="block mb-2 text-sm text-dark"
-                >Nom <span class="text-red-600">*</span></label
+              <label for="username" class="block mb-2 text-sm text-dark"
+                >Nom d'utilisateur <span class="text-red-600">*</span></label
               >
               <input
                 type="text"
-                id="lastName"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                required
-              />
-            </div>
-            <div class="w-full">
-              <label for="firstName" class="block mb-2 text-sm text-dark"
-                >Prénom <span class="text-red-600">*</span></label
-              >
-              <input
-                type="text"
-                id="firstName"
+                id="username"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 required
               />
@@ -223,7 +230,7 @@
             </button>
 
             <button
-              v-if="formStep < MAX_STEP -1"
+              v-if="formStep < MAX_STEP - 1"
               class="bg-[#fcb795] p-3 rounded-[30px] border-black text-white text-md shadow-2xl min-w-[150px]"
               @click="nextStep()"
               :disabled="formStep >= MAX_STEP"
@@ -232,7 +239,7 @@
             </button>
 
             <button
-              v-if="formStep === MAX_STEP -1"
+              v-if="formStep === MAX_STEP - 1"
               class="bg-[#fcb795] p-3 rounded-[30px] border-black text-white text-md shadow-2xl min-w-[150px]"
             >
               Connection
@@ -253,20 +260,3 @@
   </div>
 </template>
 
-<script setup>
-import HeaderVue from "@/components/HeaderVue.vue";
-import { ref } from "vue";
-
-const formStep = ref(0);
-const MAX_STEP = ref(2);
-const showPassword = ref(false);
-const showConfirmation = ref(false);
-
-const prevStep = () => {
-  if (formStep.value > 0) formStep.value--;
-};
-
-const nextStep = () => {
-  if (formStep.value < MAX_STEP.value) formStep.value++;
-};
-</script>

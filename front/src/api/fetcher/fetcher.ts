@@ -1,7 +1,7 @@
-import UserProvider from "@/store/User";
 import axios, { AxiosError, AxiosResponse, HttpStatusCode } from "axios";
-import LYSResponse from "./response";
-const envVars = process.env;
+import UserProvider from "../../store/User";
+import Response from "./response";
+const envVars = import.meta.env;
 
 class Fetcher {
   private static URL =
@@ -14,7 +14,7 @@ class Fetcher {
     params: object = {},
     headers: object = {},
     isAuth = true
-  ): Promise<LYSResponse<T>> {
+  ): Promise<Response<T>> {
     // Build request
     const finalUri = this.buildURL(uri, params);
     const finalHeaders = await this.getFinalHeaders(headers, isAuth);
@@ -38,7 +38,7 @@ class Fetcher {
     params: object = {},
     headers: object = {},
     isAuth = true
-  ): Promise<LYSResponse<T>> {
+  ): Promise<Response<T>> {
     // Build request"
     const finalUri = this.buildURL(uri, {});
     const finalHeaders = await this.getFinalHeaders(headers, isAuth);
@@ -61,7 +61,7 @@ class Fetcher {
     params: object = {},
     headers: object = {},
     isAuth = true
-  ): Promise<LYSResponse<T>> {
+  ): Promise<Response<T>> {
     // Build request
     const finalUri = this.buildURL(uri, {});
     const finalHeaders = await this.getFinalHeaders(headers, isAuth);
@@ -85,7 +85,7 @@ class Fetcher {
     params: object = {},
     headers: object = {},
     isAuth = true
-  ): Promise<LYSResponse<T>> {
+  ): Promise<Response<T>> {
     // Build request
     const finalUri = this.buildURL(uri, {});
     const finalHeaders = await this.getFinalHeaders(headers, isAuth);
@@ -109,7 +109,7 @@ class Fetcher {
     params: object = {},
     headers: object = {},
     isAuth = true
-  ): Promise<LYSResponse<T>> {
+  ): Promise<Response<T>> {
     // Build request
     const finalUri = this.buildURL(uri, params);
     const finalHeaders = await this.getFinalHeaders(headers, isAuth);
@@ -153,7 +153,7 @@ class Fetcher {
   private static formatResponse<T>(
     axiosResponse: AxiosResponse<any, any>,
     noMessage = false
-  ): LYSResponse<T> {
+  ): Response<T> {
     if (noMessage) {
       return {
         ok: this.isRequestSucces(axiosResponse.status),
@@ -183,7 +183,7 @@ class Fetcher {
     return "";
   }
 
-  private static handleError<T>(error: AxiosError): Promise<LYSResponse<T>> {
+  private static handleError<T>(error: AxiosError): Promise<Response<T>> {
     const message = (error.response?.data as any).message;
 
     if (error.response)

@@ -1,3 +1,11 @@
+<script setup lang="ts">
+import HeaderVue from "../components/HeaderVue.vue";
+import { ref } from "vue";
+
+const showPassword = ref(false)
+
+</script>
+
 <template>
   <HeaderVue />
   <div class="h-full flex justify-center items-center">
@@ -98,14 +106,3 @@
     </div>
   </div>
 </template>
-
-<script>
-import HeaderVue from "@/components/HeaderVue.vue";
-
-export default {
-  name: "HomeView",
-  components: {
-    HeaderVue,
-  },
-};
-</script>

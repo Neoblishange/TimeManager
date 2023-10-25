@@ -1,5 +1,5 @@
-import UserAPI from "@/api/user.api";
-import User from "@/types/User";
+import UserAPI from "../api/user.api";
+import User from "../types/User";
 
 class UserProvider {
   private static user: User;
