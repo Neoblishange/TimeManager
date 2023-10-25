@@ -8,8 +8,14 @@ defmodule TimemasterWeb.UserController do
   action_fallback TimemasterWeb.FallbackController
 
   def get_user_by_params(conn, %{"email" => email, "username" => username}) do
-    user = Repo.get_by(User, email: email, username: username)
-    render(conn, :get_user_by_params, user: user);
+    case Repo.get_by(User, email: email, username: username) do
+      nil ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{message: "User not found"})
+      user ->
+        render(conn, :get_user_by_params, user: user)
+    end
   end
 
   def index(conn, _params) do
@@ -27,23 +33,40 @@ defmodule TimemasterWeb.UserController do
   end
 
   def show(conn, %{"id" => id}) do
-    user = Accounts.get_user!(id)
-    render(conn, :show, user: user)
+    case Repo.get(User, id) do
+      nil ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{message: "User not found"})
+      user ->
+        render(conn, :show, user: user)
+    end
   end
 
   def update(conn, %{"id" => id, "user" => user_params}) do
-    user = Accounts.get_user!(id)
-
-    with {:ok, %User{} = user} <- Accounts.update_user(user, user_params) do
-      render(conn, :show, user: user)
+    case Repo.get(User, id) do
+      nil ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{message: "User not found"})
+      user ->
+        with {:ok, %User{} = user} <- Accounts.update_user(user, user_params) do
+          render(conn, :show, user: user)
+        end
     end
   end
 
   def delete(conn, %{"id" => id}) do
-    user = Accounts.get_user!(id)
-
-    with {:ok, %User{}} <- Accounts.delete_user(user) do
-      send_resp(conn, :no_content, "")
+    case Repo.get(User, id) do
+      nil ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{message: "User not found"})
+      user ->
+        with {:ok, %User{}} <- Accounts.delete_user(user) do
+          conn
+          |> json(%{message: "User deleted"})
+        end
     end
   end
 end

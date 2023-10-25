@@ -9,5 +9,6 @@ defmodule Timemaster.Repo.Migrations.CreateUsers do
       add :roles, {:array, :string}, default: ["employee"]
       timestamps(type: :utc_datetime)
     end
+    create unique_index(:users, [:email])
   end
 end
