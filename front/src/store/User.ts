@@ -1,4 +1,3 @@
-import UserAPI from "../api/user.api";
 import User from "../types/User";
 
 class UserProvider {
@@ -22,32 +21,6 @@ class UserProvider {
 
   public setUsername = (username: string) => {
     UserProvider.user.username = username;
-    UserProvider.save();
-  };
-
-  public getLastName = (): string => {
-    if (UserProvider.user.lastName) return UserProvider.user.lastName;
-    else {
-      UserProvider.loadUser();
-      return UserProvider.user.lastName;
-    }
-  };
-
-  public setLastName = (lastName: string) => {
-    UserProvider.user.lastName = lastName;
-    UserProvider.save();
-  };
-
-  public getFirstName = (): string => {
-    if (UserProvider.user.firstName) return UserProvider.user.firstName;
-    else {
-      UserProvider.loadUser();
-      return UserProvider.user.firstName;
-    }
-  };
-
-  public setFirstName = (firstName: string) => {
-    UserProvider.user.firstName = firstName;
     UserProvider.save();
   };
 
@@ -81,6 +54,10 @@ class UserProvider {
     }
   };
 
+  public isAuth = (): boolean => {
+    return UserProvider.user.authToken.length > 10;
+  };
+
   static loadUserFromLS = () => {
     const userLS = localStorage.getItem("user");
     const userParsed = JSON.parse(userLS ?? "{}");
@@ -90,8 +67,6 @@ class UserProvider {
       email: userParsed.email ?? "",
       username: userParsed.username ?? "",
       authToken: userParsed.authToken ?? "",
-      firstName: userParsed.firstName ?? "",
-      lastName: userParsed.lastName ?? "",
     };
     return;
   };
@@ -111,7 +86,10 @@ class UserProvider {
 
     if (isMissingInfo) {
       UserProvider.user = {
-        ...(await UserAPI.me()).data,
+        // ...(await UserAPI.getUser()).data,
+        _id: "00000000000000000000000000000000000",
+        email: "aaaaa@aaaa.com",
+        username: "usernameTEST",
         authToken: UserProvider.user.authToken,
       };
     }
@@ -123,6 +101,11 @@ class UserProvider {
     const stringUser = JSON.stringify(UserProvider.user);
 
     localStorage.setItem("user", stringUser);
+  };
+
+  public disconnect = () => {
+    localStorage.clear();
+    UserProvider.user.authToken = "";
   };
 }
 

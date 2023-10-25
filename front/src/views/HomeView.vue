@@ -1,9 +1,19 @@
 <script setup lang="ts">
-import HeaderVue from "../components/HeaderVue.vue";
 import { ref } from "vue";
+import UserAPI from "../api/user.api";
+import HeaderVue from "../components/HeaderVue.vue";
+import router from "../router";
+import UserProvider from "../store/User.ts";
 
-const showPassword = ref(false)
+const user = new UserProvider();
 
+const showPassword = ref(false);
+
+const login = () => {
+  const token = UserAPI.login().authToken;
+  user.setToken(token);
+  UserProvider.loadUser().then(() => router.push("/user"));
+};
 </script>
 
 <template>
@@ -88,6 +98,7 @@ const showPassword = ref(false)
             </div>
           </div>
           <button
+            @click="login()"
             class="bg-[#fcb795] p-3 rounded-[30px] border-black text-white text-md shadow-2xl min-w-[150px]"
           >
             Connection

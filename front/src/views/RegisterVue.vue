@@ -246,12 +246,12 @@ const nextStep = () => {
             </button>
           </div>
           <p>
-            Pas encore de compte ?
+            Déjà un compte ?
             <router-link
               class="underline text-[#fcb795] cursor-pointer"
-              to="/register"
+              to="/"
             >
-              Le créer !
+              Se connecter !
             </router-link>
           </p>
         </div>
