@@ -4,6 +4,7 @@ defmodule TimemasterWeb.ClockController do
   alias Timemaster.Time
   alias Timemaster.Time.Clock
   alias Timemaster.Repo
+  import Ecto.Query
 
   action_fallback TimemasterWeb.FallbackController
 
@@ -25,7 +26,7 @@ defmodule TimemasterWeb.ClockController do
   end
 
 
-  def show(conn, %{"userID" => userID}) do
+  def user_clocks(conn, %{"userID" => userID}) do
     case Repo.get_by(Timemaster.Accounts.User, id: userID) do
       nil ->
         conn
@@ -33,9 +34,9 @@ defmodule TimemasterWeb.ClockController do
         |> put_view(TimemasterWeb.ErrorView)
         |> render(:"404")
       user ->
-        clock = Repo.get_by(Clock, user_id: user.id)
-        clock = Repo.preload(clock, :user)
-        render(conn, :show, clock: clock)
+        clocks = Repo.all(from(c in Clock, where: c.user_id == ^user.id))
+        clocks = Repo.preload(clocks, :user)
+        render(conn, :index, clocks: clocks)
     end
   end
 

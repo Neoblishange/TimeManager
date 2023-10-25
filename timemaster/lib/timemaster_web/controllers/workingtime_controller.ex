@@ -8,19 +8,32 @@ defmodule TimemasterWeb.WorkingTimeController do
 
   action_fallback TimemasterWeb.FallbackController
 
-  def get_workingtimes_by_params(conn, %{"userID" => userID, "start" => startTime, "end" => endTime}) do
-    user = Repo.get_by(Timemaster.Accounts.User, id: userID)
+  def get_workingtimes_by_params(conn, params) do
+    case Map.fetch(params, "start") do
+      {:ok, startTime} ->
+        case Map.fetch(params, "end") do
+          {:ok, endTime} ->
+            case Map.fetch(params, "userID") do
+              {:ok, userID} ->
+                user = Repo.get_by(Timemaster.Accounts.User, id: userID)
 
-    # Convertir startTime et endTime en valeurs :utc_datetime
-    start_datetime = DateTime.from_naive(startTime, "Etc/UTC")
-    end_datetime = DateTime.from_naive(endTime, "Etc/UTC")
+                #start_datetime = DateTime.from_naive(startTime, "Etc/UTC")
+                #end_datetime = DateTime.from_naive(endTime, "Etc/UTC")
+                start_datetime = "#{startTime} 00:00:00"
+                end_datetime = "#{endTime} 00:00:00"
 
-    query = from(w in Workingtime,
-      where: w.start >= ^start_datetime and w.end <= ^end_datetime and w.user == ^user)
-
-    workingtimes = Repo.all(query)
-    render(conn, :get_workingtimes_by_params, workingtimes: workingtimes)
+                workingtimes = Repo.all(from(w in Workingtime,
+                  where: w.start >= ^start_datetime and w.end <= ^end_datetime and w.user_id == ^user.id))
+                workingtimes = Repo.preload(workingtimes, :user)
+                render(conn, :get_workingtimes_by_params, workingtimes: workingtimes)
+              :error ->
+            end
+          :error ->
+        end
+      :error ->
+    end
   end
+
 
 
   def index(conn, _params) do
