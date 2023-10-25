@@ -19,6 +19,19 @@ class WorkingTimesAPI {
         tomorrow
     );
   };
+
+  public static add = async (
+    startDate: Date,
+    endDate: Date
+  ): Promise<Response<WorkingTimes>> => {
+    const user = new UserProvider();
+    const start = moment(startDate).format("YYYY-MM-DD HH:mm:ss");
+    const end = moment(endDate).format("YYYY-MM-DD HH:mm:ss");
+
+    return Fetcher.post("workingtimes/" + user.getID(), {
+      workingtime: { start, end },
+    });
+  };
 }
 
 export default WorkingTimesAPI;

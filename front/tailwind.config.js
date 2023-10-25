@@ -1,12 +1,18 @@
 /** @type {import('tailwindcss').Config} */
-export default {
-  purge: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
-  darkMode: false, // or 'media' or 'class'
+const colors = require("tailwindcss/colors");
+
+module.exports = {
+  content: [
+    "./index.html",
+    "./src/**/*.{vue,js,ts,jsx,tsx}",
+    "./node_modules/vue-tailwind-datepicker/**/*.js",
+  ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        "vtd-primary": colors.sky, // Light mode Datepicker color
+      },
+    },
   },
-  variants: {
-    extend: {},
-  },
-  plugins: [],
+  plugins: [require("@tailwindcss/forms")],
 };
