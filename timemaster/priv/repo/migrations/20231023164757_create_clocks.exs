@@ -6,11 +6,11 @@ defmodule Timemaster.Repo.Migrations.CreateClocks do
       add :id, :binary_id, primary_key: true
       add :time, :utc_datetime
       add :status, :boolean, default: false, null: false
-      add :user, references(:users, on_delete: :nothing, type: :binary_id)
+      add :user_id, references(:users, on_delete: :delete_all, type: :binary_id)
 
       timestamps(type: :utc_datetime)
     end
 
-    create index(:clocks, [:user])
+    create index(:clocks, [:user_id])
   end
 end

@@ -1,6 +1,10 @@
 defmodule TimemasterWeb.WorkingTimeJSON do
   alias Timemaster.Work.Workingtime
 
+  def get_workingtimes_by_params(%{workingtimes: workingtimes}) do
+    %{data: for(workingtime <- workingtimes, do: data(workingtime))}
+  end
+
   @doc """
   Renders a list of workingtimes.
   """
@@ -19,7 +23,8 @@ defmodule TimemasterWeb.WorkingTimeJSON do
     %{
       id: workingtime.id,
       start: workingtime.start,
-      end: workingtime.end
+      end: workingtime.end,
+      user: workingtime.user
     }
   end
 end

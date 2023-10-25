@@ -3,8 +3,14 @@ defmodule TimemasterWeb.UserController do
 
   alias Timemaster.Accounts
   alias Timemaster.Accounts.User
+  alias Timemaster.Repo
 
   action_fallback TimemasterWeb.FallbackController
+
+  def get_user_by_params(conn, %{"email" => email, "username" => username}) do
+    user = Repo.get_by(User, email: email, username: username)
+    render(conn, :get_user_by_params, user: user);
+  end
 
   def index(conn, _params) do
     users = Accounts.list_users()

@@ -7,7 +7,7 @@ defmodule Timemaster.Time.Clock do
   schema "clocks" do
     field :status, :boolean, default: false
     field :time, :utc_datetime
-    field :user, :binary_id
+    belongs_to :user, Timemaster.Accounts.User
 
     timestamps(type: :utc_datetime)
   end
@@ -15,7 +15,7 @@ defmodule Timemaster.Time.Clock do
   @doc false
   def changeset(clock, attrs) do
     clock
-    |> cast(attrs, [:time, :status])
-    |> validate_required([:time, :status])
+    |> cast(attrs, [:time, :status, :user_id])
+    |> validate_required([:time, :status, :user_id])
   end
 end
