@@ -1,7 +1,8 @@
-type WorkingTimes = {
+type WorkingTime = {
+  id: string;
   start: Date;
   end: Date;
   user: string;
 };
 
-export default WorkingTimes;
+export default WorkingTime;

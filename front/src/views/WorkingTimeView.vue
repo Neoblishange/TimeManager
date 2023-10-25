@@ -56,11 +56,13 @@ const dateValue = ref([]);
 const workingTimes = ref<WorkingTimes[]>([]);
 
 const loadData = () => {
-  WorkingTimesAPI.list().then((res) => (workingTimes.value = res.data));
+  WorkingTimesAPI.getWorkingTimes().then(
+    (res) => (workingTimes.value = res.data)
+  );
 };
 
 const addWorkingTimes = () => {
-  WorkingTimesAPI.add(
+  WorkingTimesAPI.create(
     new Date(dateValue.value[0]),
     new Date(dateValue.value[1])
   ).then(() => {
