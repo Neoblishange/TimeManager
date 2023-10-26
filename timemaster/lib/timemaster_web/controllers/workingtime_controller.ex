@@ -22,13 +22,17 @@ defmodule TimemasterWeb.WorkingTimeController do
                     |> put_status(:not_found)
                     |> json(%{message: "User not found"})
                   user ->
-                    start_datetime = "#{startTime} 00:00:00"
-                    end_datetime = "#{endTime} 00:00:00"
-
-                    workingtimes = Repo.all(from(w in Workingtime,
-                      where: w.start >= ^start_datetime and w.end <= ^end_datetime and w.user_id == ^user.id))
-                    workingtimes = Repo.preload(workingtimes, :user)
-                    render(conn, :get_workingtimes_by_params, workingtimes: workingtimes)
+                    case DateTime.from_iso8601(startTime) && DateTime.from_iso8601(endTime) do
+                      {:error, :invalid_format} ->
+                        conn
+                        |> put_status(:not_found)
+                        |> json(%{message: "Error datetime of format YYYY-mm-dd HH:ii:ss required"})
+                      _ ->
+                        workingtimes = Repo.all(from(w in Workingtime,
+                          where: w.start >= ^startTime and w.end <= ^endTime and w.user_id == ^user.id))
+                        workingtimes = Repo.preload(workingtimes, :user)
+                        render(conn, :get_workingtimes_by_params, workingtimes: workingtimes)
+                    end
                 end
               :error ->
                 conn
