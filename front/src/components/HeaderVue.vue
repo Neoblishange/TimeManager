@@ -21,6 +21,15 @@
           Temps de travail
         </button>
       </router-link>
+      
+      <router-link :to="'/workingTimes/graphs/' + user.getID()">
+        <button
+          class="bg-white p-3 rounded-[30px] border-[#3b3fb8] text-[#3b3fb8] text-md shadow-2xl"
+        >
+          Graphiques
+        </button>
+      </router-link>
+      
       <router-link to="/user">
         <button class="w-[50px] h-[50px] rounded-full bg-red-600 text-lg">
           {{ user.getUsername().charAt(0).toUpperCase() }}
@@ -28,7 +37,7 @@
       </router-link>
       <button
         @click="disconnect()"
-        class="bg-[#3b3fb8] p-3 rounded-[30px] border-black text-white text-md shadow-2xl"
+        class="bg-[#3b3fb8] p-3 rounded-[30px] text-white text-md shadow-2xl"
       >
         Déconnection
       </button>

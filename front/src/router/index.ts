@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import EmployeesView from "../views/EmployeesView.vue";
+import GraphView from "../views/GraphView.vue";
 import HomeView from "../views/HomeView.vue";
 import RegisterVue from "../views/RegisterVue.vue";
 import UserHome from "../views/UserHome.vue";
@@ -21,6 +22,11 @@ const routes = [
     path: "/workingTimes/:userID",
     name: "workingTimes",
     component: WorkingTimeView,
+  },
+  {
+    path: "/workingTimes/graphs/:userID",
+    name: "graph",
+    component: GraphView,
   },
   {
     path: "/employees",
