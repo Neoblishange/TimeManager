@@ -9,8 +9,11 @@ class WorkingTimesAPI {
     Response<WorkingTime[]>
   > => {
     const user = new UserProvider();
-    const start = moment().subtract(10, "years").utc().format("YYYY-MM-DD");
-    const end = moment().add(10, "years").utc().format("YYYY-MM-DD");
+    const start = moment()
+      .subtract(10, "years")
+      .utc()
+      .format("YYYY-MM-DD HH:mm:ss");
+    const end = moment().add(10, "years").utc().format("YYYY-MM-DD HH:mm:ss");
 
     return Fetcher.get<WorkingTime[]>(
       "workingtimes/" + user.getID() + "?start=" + start + "&end=" + end

@@ -1,14 +1,15 @@
 <script setup lang="ts">
+import VueDatePicker from "@vuepic/vue-datepicker";
 import moment from "moment";
 import { onMounted, ref } from "vue";
-import VueTailwindDatepicker from "vue-tailwind-datepicker";
 import WorkingTimesAPI from "../api/workingTimes.api";
 import HeaderVue from "../components/HeaderVue.vue";
 import WorkingTimesUpdate from "../components/WorkingTimeUpdate.vue";
 import WorkingTime from "../types/WorkingTimes";
 
-const dateValue = ref([]);
+const dateValue = ref<Date[]>([new Date(), new Date()]);
 const workingTimes = ref<WorkingTime[]>([]);
+
 const modalUpdate = ref(false);
 const timeUpdate = ref<WorkingTime>();
 
@@ -57,12 +58,38 @@ onMounted(() => {
   <div class="mt-[150px] flex justify-center items-center flex-col gap-6">
     <div>Ajouter une plage horaire</div>
     <div class="w-full flex flex-row gap-2 max-w-[300px]">
-      <vue-tailwind-datepicker
-        v-model="dateValue"
-        as-single
-        use-range
-        :shortcuts="false"
-      />
+      <div>
+        <VueDatePicker v-model="dateValue[0]">
+          <template #action-row="{ internalModelValue, selectDate }">
+            <div class="action-row flex flex-col justify-center w-full">
+              <p class="current-selection text-center">
+                {{ moment(internalModelValue).format("DD-MM-YYYY HH:mm") }}
+              </p>
+              <button
+                @click="selectDate"
+                class="select-button bg-[#3b3fb8] p-3 rounded-[30px] text-white text-md shadow-2xl"
+              >
+                Valider
+              </button>
+            </div>
+          </template>
+        </VueDatePicker>
+        <VueDatePicker v-model="dateValue[1]">
+          <template #action-row="{ internalModelValue, selectDate }">
+            <div class="action-row flex flex-col justify-center w-full">
+              <p class="current-selection text-center">
+                {{ moment(internalModelValue).format("DD-MM-YYYY HH:mm") }}
+              </p>
+              <button
+                @click="selectDate"
+                class="select-button bg-[#3b3fb8] p-3 rounded-[30px] text-white text-md shadow-2xl"
+              >
+                Valider
+              </button>
+            </div>
+          </template>
+        </VueDatePicker>
+      </div>
       <button @click="addWorkingTimes()">
         <svg
           xmlns="http://www.w3.org/2000/svg"

@@ -1,3 +1,4 @@
+import "@vuepic/vue-datepicker/dist/main.css";
 import { createApp } from "vue";
 import App from "./App.vue";
 import "./index.css";
