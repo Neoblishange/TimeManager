@@ -9,16 +9,11 @@ class WorkingTimesAPI {
     Response<WorkingTime[]>
   > => {
     const user = new UserProvider();
-    const yesterday = moment().subtract(1, "day").format("YYYY-MM-DD HH:mm:ss");
-    const tomorrow = moment().add(1, "day").format("YYYY-MM-DD HH:mm:ss");
+    const start = moment().subtract(10, "years").utc().format("YYYY-MM-DD");
+    const end = moment().add(10, "years").utc().format("YYYY-MM-DD");
 
     return Fetcher.get<WorkingTime[]>(
-      "workingtimes/" +
-        user.getID() +
-        "?start=" +
-        yesterday +
-        "&end=" +
-        tomorrow
+      "workingtimes/" + user.getID() + "?start=" + start + "&end=" + end
     );
   };
 
@@ -45,11 +40,10 @@ class WorkingTimesAPI {
   public static update = async (
     workingTime: WorkingTime
   ): Promise<Response<WorkingTime>> => {
-    const user = new UserProvider();
     const start = moment(workingTime.start).format("YYYY-MM-DD HH:mm:ss");
     const end = moment(workingTime.end).format("YYYY-MM-DD HH:mm:ss");
 
-    return Fetcher.put("workingtimes/" + user.getID() + "/" + workingTime.id, {
+    return Fetcher.put("workingtimes/" + workingTime.id, {
       workingtime: { start, end },
     });
   };

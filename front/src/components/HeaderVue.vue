@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fixed top-0 w-full bg-[#fcb795] h-[100px] p-5 border-b-2 border-gray-200 flex items-center justify-between"
+    class="fixed top-0 w-full bg-[#fcb795] h-[100px] p-5 border-b-2 border-gray-200 flex items-center justify-between z-[2000]"
   >
     <router-link :to="user.isAuth() ? '/user' : '/'">
       <p class="text-[#3b3fb8] text-2xl font-extrabold">Time Master</p>

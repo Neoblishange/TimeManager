@@ -1,5 +1,5 @@
 type User = {
-  _id: string;
+  id: string;
   email: string;
   authToken: string;
   username: string;
