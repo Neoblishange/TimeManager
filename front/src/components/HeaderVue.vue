@@ -6,6 +6,14 @@
       <p class="text-[#3b3fb8] text-2xl font-extrabold">Time Master</p>
     </router-link>
     <div v-if="isAuth" class="flex items-center gap-3">
+      <router-link v-if="user.getRoles().includes(EUserRole.MANAGER)" to="/employees">
+        <button
+          class="bg-white p-3 rounded-[30px] border-[#3b3fb8] text-[#3b3fb8] text-md shadow-2xl"
+        >
+          Voir les employés
+        </button>
+      </router-link>
+
       <router-link :to="'/workingTimes/' + user.getID()">
         <button
           class="bg-white p-3 rounded-[30px] border-[#3b3fb8] text-[#3b3fb8] text-md shadow-2xl"
@@ -47,6 +55,7 @@
 <script setup lang="ts">
 import router from "../router";
 import UserProvider from "../store/User";
+import EUserRole from "../types/EUserRole";
 
 const user = new UserProvider();
 const isAuth = user.isAuth();
