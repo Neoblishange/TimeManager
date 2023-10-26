@@ -8,7 +8,7 @@
     <div v-if="isAuth" class="flex items-center gap-3">
       <router-link v-if="user.getRoles().includes(EUserRole.MANAGER)" to="/employees">
         <button
-          class="bg-white p-3 rounded-[30px] border-[#3b3fb8] text-[#3b3fb8] text-md shadow-2xl"
+          class="bg-white p-3 rounded-[30px] border-[#3b3fb8] text-[#3b3fb8] text-md shadow-lg"
         >
           Voir les employés
         </button>
@@ -16,7 +16,7 @@
 
       <router-link :to="'/workingTimes/' + user.getID()">
         <button
-          class="bg-white p-3 rounded-[30px] border-[#3b3fb8] text-[#3b3fb8] text-md shadow-2xl"
+          class="bg-white p-3 rounded-[30px] border-[#3b3fb8] text-[#3b3fb8] text-md shadow-lg"
         >
           Temps de travail
         </button>
@@ -24,7 +24,7 @@
       
       <router-link :to="'/workingTimes/graphs/' + user.getID()">
         <button
-          class="bg-white p-3 rounded-[30px] border-[#3b3fb8] text-[#3b3fb8] text-md shadow-2xl"
+          class="bg-white p-3 rounded-[30px] border-[#3b3fb8] text-[#3b3fb8] text-md shadow-lg"
         >
           Graphiques
         </button>
@@ -37,7 +37,7 @@
       </router-link>
       <button
         @click="disconnect()"
-        class="bg-[#3b3fb8] p-3 rounded-[30px] text-white text-md shadow-2xl"
+        class="bg-[#3b3fb8] p-3 rounded-[30px] text-white text-md shadow-lg"
       >
         Déconnection
       </button>
@@ -45,14 +45,14 @@
     <div v-else class="flex items-center gap-3">
       <router-link to="/register">
         <button
-          class="bg-white p-3 rounded-[30px] border-[#3b3fb8] text-[#3b3fb8] text-md shadow-2xl"
+          class="bg-white p-3 rounded-[30px] border-[#3b3fb8] text-[#3b3fb8] text-md shadow-lg"
         >
           Créer un compte
         </button>
       </router-link>
       <router-link to="/">
         <button
-          class="bg-[#3b3fb8] p-3 rounded-[30px] border-black text-white text-md shadow-2xl"
+          class="bg-[#3b3fb8] p-3 rounded-[30px] border-black text-white text-md shadow-lg"
         >
           Connection
         </button>

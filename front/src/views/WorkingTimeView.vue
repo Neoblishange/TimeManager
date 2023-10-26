@@ -67,7 +67,7 @@ onMounted(() => {
               </p>
               <button
                 @click="selectDate"
-                class="select-button bg-[#3b3fb8] p-3 rounded-[30px] text-white text-md shadow-2xl"
+                class="select-button bg-[#3b3fb8] p-3 rounded-[30px] text-white text-md shadow-lg"
               >
                 Valider
               </button>
@@ -82,7 +82,7 @@ onMounted(() => {
               </p>
               <button
                 @click="selectDate"
-                class="select-button bg-[#3b3fb8] p-3 rounded-[30px] text-white text-md shadow-2xl"
+                class="select-button bg-[#3b3fb8] p-3 rounded-[30px] text-white text-md shadow-lg"
               >
                 Valider
               </button>

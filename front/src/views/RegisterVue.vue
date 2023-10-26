@@ -241,7 +241,7 @@ const register = () => {
           <div class="flex gap-2">
             <button
               v-if="formStep != 0"
-              class="bg-[#fcb795] p-3 rounded-[30px] border-black text-white text-md shadow-2xl min-w-[150px]"
+              class="bg-[#fcb795] p-3 rounded-[30px] border-black text-white text-md shadow-lg min-w-[150px]"
               @click="prevStep()"
               :disabled="formStep === 0"
             >
@@ -250,7 +250,7 @@ const register = () => {
 
             <button
               v-if="formStep < MAX_STEP - 1"
-              class="bg-[#fcb795] p-3 rounded-[30px] border-black text-white text-md shadow-2xl min-w-[150px]"
+              class="bg-[#fcb795] p-3 rounded-[30px] border-black text-white text-md shadow-lg min-w-[150px]"
               @click="nextStep()"
               :disabled="formStep >= MAX_STEP"
             >
@@ -260,7 +260,7 @@ const register = () => {
             <button
               v-if="formStep === MAX_STEP - 1"
               @click="register()"
-              class="bg-[#fcb795] p-3 rounded-[30px] border-black text-white text-md shadow-2xl min-w-[150px]"
+              class="bg-[#fcb795] p-3 rounded-[30px] border-black text-white text-md shadow-lg min-w-[150px]"
             >
               Connection
             </button>

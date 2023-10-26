@@ -70,7 +70,7 @@ const update = () => {
                   </p>
                   <button
                     @click="selectDate"
-                    class="select-button bg-[#3b3fb8] p-3 rounded-[30px] text-white text-md shadow-2xl"
+                    class="select-button bg-[#3b3fb8] p-3 rounded-[30px] text-white text-md shadow-lg"
                   >
                     Valider
                   </button>
@@ -85,7 +85,7 @@ const update = () => {
                   </p>
                   <button
                     @click="selectDate"
-                    class="select-button bg-[#3b3fb8] p-3 rounded-[30px] text-white text-md shadow-2xl"
+                    class="select-button bg-[#3b3fb8] p-3 rounded-[30px] text-white text-md shadow-lg"
                   >
                     Valider
                   </button>
@@ -97,7 +97,7 @@ const update = () => {
 
         <button
           @click="update()"
-          class="bg-[#3b3fb8] p-3 rounded-[30px] border-black text-white text-md shadow-2xl"
+          class="bg-[#3b3fb8] p-3 rounded-[30px] border-black text-white text-md shadow-lg"
         >
           Modifier
         </button>

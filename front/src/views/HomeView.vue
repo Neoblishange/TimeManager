@@ -124,7 +124,7 @@ const login = () => {
           </div>
           <button
             @click="login()"
-            class="bg-[#fcb795] p-3 rounded-[30px] border-black text-white text-md shadow-2xl min-w-[150px]"
+            class="bg-[#fcb795] p-3 rounded-[30px] border-black text-white text-md shadow-lg min-w-[150px]"
           >
             Connection
           </button>
