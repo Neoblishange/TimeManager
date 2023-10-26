@@ -1,3 +1,4 @@
+import EUserRole from "../types/EUserRole";
 import User from "../types/User";
 
 class UserProvider {
@@ -47,11 +48,29 @@ class UserProvider {
   };
 
   public getID = (): string => {
-    if (UserProvider.user._id) return UserProvider.user._id;
+    if (UserProvider.user.id) return UserProvider.user.id;
     else {
       UserProvider.loadUser();
-      return UserProvider.user._id;
+      return UserProvider.user.id;
     }
+  };
+
+  public setID = (id: string) => {
+    UserProvider.user.id = id;
+    UserProvider.save();
+  };
+
+  public getRoles = (): EUserRole[] => {
+    if (UserProvider.user.id) return UserProvider.user.roles;
+    else {
+      UserProvider.loadUser();
+      return UserProvider.user.roles;
+    }
+  };
+
+  public setRoles = (roles: EUserRole[]) => {
+    UserProvider.user.roles = roles;
+    UserProvider.save();
   };
 
   public isAuth = (): boolean => {
@@ -63,10 +82,11 @@ class UserProvider {
     const userParsed = JSON.parse(userLS ?? "{}");
 
     UserProvider.user = {
-      _id: userParsed._id ?? "",
+      id: userParsed.id ?? "",
       email: userParsed.email ?? "",
       username: userParsed.username ?? "",
       authToken: userParsed.authToken ?? "",
+      roles: userParsed.roles ?? [],
     };
     return;
   };
@@ -84,15 +104,15 @@ class UserProvider {
           (typeof value === "number" && Number.isNaN(value));
     }
 
-    if (isMissingInfo) {
-      UserProvider.user = {
-        // ...(await UserAPI.getUser()).data,
-        _id: "00000000000000000000000000000000000",
-        email: "aaaaa@aaaa.com",
-        username: "usernameTEST",
-        authToken: UserProvider.user.authToken,
-      };
-    }
+    // if (isMissingInfo) {
+    //   UserProvider.user = {
+    //     ...(await UserAPI.getUser()).data,
+    //     id: "00000000000000000000000000000000000",
+    //     email: "aaaaa@aaaa.com",
+    //     username: "usernameTEST",
+    //     authToken: UserProvider.user.authToken,
+    //   };
+    // }
 
     UserProvider.save();
   };

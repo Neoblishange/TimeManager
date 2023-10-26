@@ -6,13 +6,25 @@ import router from "../router";
 import UserProvider from "../store/User.ts";
 
 const user = new UserProvider();
+const userData = ref({
+  email: "",
+  username: "",
+});
 
 const showPassword = ref(false);
 
 const login = () => {
-  const token = UserAPI.login().authToken;
-  user.setToken(token);
-  UserProvider.loadUser().then(() => router.push("/user"));
+  UserAPI.getUserWithParams(userData.value.email, userData.value.username)
+    .then((res) => {
+      user.setID(res.data.id);
+      user.setEmail(res.data.email);
+      user.setUsername(res.data.username);
+      user.setToken("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+      user.setRoles(res.data.roles);
+    })
+    .then(() => {
+      router.push("/user");
+    });
 };
 </script>
 
@@ -31,8 +43,21 @@ const login = () => {
               >Email <span class="text-red-600">*</span></label
             >
             <input
+              v-model="userData.email"
               type="text"
               id="email"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              required
+            />
+          </div>
+          <div class="w-full">
+            <label for="username" class="block mb-2 text-sm text-dark"
+              >Nom d'utilisateur <span class="text-red-600">*</span></label
+            >
+            <input
+              v-model="userData.username"
+              type="text"
+              id="username"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
               required
             />

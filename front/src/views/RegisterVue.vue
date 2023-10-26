@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import UserAPI from "../api/user.api";
 import HeaderVue from "../components/HeaderVue.vue";
+import router from "../router";
+import UserProvider from "../store/User";
 
 const formStep = ref(0);
 const MAX_STEP = ref(2);
 const showPassword = ref(false);
 const showConfirmation = ref(false);
+const formData = ref({ email: "", username: "" });
+const user = new UserProvider();
 
 const prevStep = () => {
   if (formStep.value > 0) formStep.value--;
@@ -13,6 +18,18 @@ const prevStep = () => {
 
 const nextStep = () => {
   if (formStep.value < MAX_STEP.value) formStep.value++;
+};
+
+const register = () => {
+  UserAPI.createUser(formData.value.email, formData.value.username)
+    .then((res) => {
+      user.setEmail(res.data.email);
+      user.setUsername(res.data.username);
+      user.setID(res.data.id);
+      user.setToken("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+      user.setRoles(res.data.roles)
+    })
+    .then(() => router.push("/user"));
 };
 </script>
 
@@ -37,6 +54,7 @@ const nextStep = () => {
                 >Nom d'utilisateur <span class="text-red-600">*</span></label
               >
               <input
+                v-model="formData.username"
                 type="text"
                 id="username"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
@@ -92,6 +110,7 @@ const nextStep = () => {
                 >Email <span class="text-red-600">*</span></label
               >
               <input
+                v-model="formData.email"
                 type="text"
                 id="email"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
@@ -240,6 +259,7 @@ const nextStep = () => {
 
             <button
               v-if="formStep === MAX_STEP - 1"
+              @click="register()"
               class="bg-[#fcb795] p-3 rounded-[30px] border-black text-white text-md shadow-2xl min-w-[150px]"
             >
               Connection
@@ -247,10 +267,7 @@ const nextStep = () => {
           </div>
           <p>
             Déjà un compte ?
-            <router-link
-              class="underline text-[#fcb795] cursor-pointer"
-              to="/"
-            >
+            <router-link class="underline text-[#fcb795] cursor-pointer" to="/">
               Se connecter !
             </router-link>
           </p>
@@ -259,4 +276,3 @@ const nextStep = () => {
     </div>
   </div>
 </template>
-

@@ -3,8 +3,14 @@ import Fetcher from "./fetcher/fetcher";
 import Response from "./fetcher/response";
 
 class UserAPI {
-  public static getUser = async (): Promise<Response<User>> =>
-    Fetcher.get<User>("users");
+  public static getUserWithID = async (id: string): Promise<Response<User>> =>
+    Fetcher.get<User>("users/" + id);
+
+  public static getUserWithParams = async (
+    email: string,
+    username: string
+  ): Promise<Response<User>> =>
+    Fetcher.get<User>(`users?email=${email}&username=${username}`);
 
   public static createUser = async (
     email: string,
@@ -21,10 +27,16 @@ class UserAPI {
   public static deleteUser = async (): Promise<Response<User>> =>
     Fetcher.delete<User>("users");
 
-  public static login = () => {
+  public static login = ({
+    email,
+    username,
+  }: {
+    email: string;
+    username: string;
+  }) => {
     return {
-      email: "aaa@aaa.com",
-      username: "usernameTEST",
+      email,
+      username,
       authToken: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     };
   };

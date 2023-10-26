@@ -1,3 +1,28 @@
+<script setup lang="ts">
+import { ref } from "vue";
+import UserAPI from "../api/user.api";
+import HeaderVue from "../components/HeaderVue.vue";
+import router from "../router";
+import UserProvider from "../store/User";
+
+const user = new UserProvider();
+
+console.log("user",user.getID());
+
+const userData = ref({
+  email: "",
+  username: "",
+});
+
+const deleteAccount = () =>
+  UserAPI.deleteUser().then(() => {
+    user.disconnect();
+    router.push("/");
+  });
+
+const saveAccount = () => UserAPI.updateUser(userData.value.email, userData.value.username);
+</script>
+
 <template>
   <HeaderVue />
   <div class="mt-[150px] flex justify-center items-center flex-col gap-6">
@@ -44,25 +69,3 @@
     </button>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref } from "vue";
-import UserAPI from "../api/user.api";
-import HeaderVue from "../components/HeaderVue.vue";
-import router from "../router";
-import UserProvider from "../store/User";
-
-const user = new UserProvider();
-const userData = ref({
-  email: "",
-  username: "",
-});
-
-const deleteAccount = () =>
-  UserAPI.deleteUser().then(() => {
-    user.disconnect();
-    router.push("/");
-  });
-
-const saveAccount = () => UserAPI.updateUser("", "");
-</script>
