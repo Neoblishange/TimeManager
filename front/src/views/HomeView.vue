@@ -20,6 +20,7 @@ const login = () => {
       user.setEmail(res.data.email);
       user.setUsername(res.data.username);
       user.setToken("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+      user.setRoles(res.data.roles);
     })
     .then(() => {
       router.push("/user");

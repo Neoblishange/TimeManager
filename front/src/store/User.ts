@@ -1,3 +1,4 @@
+import EUserRole from "../types/EUserRole";
 import User from "../types/User";
 
 class UserProvider {
@@ -59,6 +60,19 @@ class UserProvider {
     UserProvider.save();
   };
 
+  public getRoles = (): EUserRole[] => {
+    if (UserProvider.user.id) return UserProvider.user.roles;
+    else {
+      UserProvider.loadUser();
+      return UserProvider.user.roles;
+    }
+  };
+
+  public setRoles = (roles: EUserRole[]) => {
+    UserProvider.user.roles = roles;
+    UserProvider.save();
+  };
+
   public isAuth = (): boolean => {
     return UserProvider.user.authToken.length > 10;
   };
@@ -72,6 +86,7 @@ class UserProvider {
       email: userParsed.email ?? "",
       username: userParsed.username ?? "",
       authToken: userParsed.authToken ?? "",
+      roles: userParsed.roles ?? [],
     };
     return;
   };

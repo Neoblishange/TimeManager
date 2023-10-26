@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import UserAPI from "../api/user.api";
 import HeaderVue from "../components/HeaderVue.vue";
+import router from "../router";
 import UserProvider from "../store/User";
 
 const formStep = ref(0);
@@ -9,7 +10,7 @@ const MAX_STEP = ref(2);
 const showPassword = ref(false);
 const showConfirmation = ref(false);
 const formData = ref({ email: "", username: "" });
-const user = new UserProvider()
+const user = new UserProvider();
 
 const prevStep = () => {
   if (formStep.value > 0) formStep.value--;
@@ -20,11 +21,15 @@ const nextStep = () => {
 };
 
 const register = () => {
-  UserAPI.createUser(formData.value.email, formData.value.username).then(res => {
-    user.setEmail(res.data.email)
-    user.setUsername(res.data.username)
-    user.setID(res.data.id)
-  });
+  UserAPI.createUser(formData.value.email, formData.value.username)
+    .then((res) => {
+      user.setEmail(res.data.email);
+      user.setUsername(res.data.username);
+      user.setID(res.data.id);
+      user.setToken("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+      user.setRoles(res.data.roles)
+    })
+    .then(() => router.push("/user"));
 };
 </script>
 
