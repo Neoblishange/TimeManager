@@ -9,6 +9,7 @@ defmodule TimemasterWeb.Router do
     pipe_through :api
       get "/users", UserController, :get_user_by_params
       put "/users/:id", UserController, :update
+      delete "/users", UserController, :delete_all
       resources "/users", UserController, except: [:index, :new, :edit, :update]
 
       get "/workingtimes/:userID", WorkingTimeController, :get_workingtimes_by_params
@@ -19,5 +20,10 @@ defmodule TimemasterWeb.Router do
 
       get "/clocks/:userID", ClockController, :user_clocks
       post "/clocks/:userID", ClockController, :create
+
+      get "/teams/:id/avg", TeamController, :get_avg_workingtimes
+      post "/teams/:userID/:id", TeamController, :add_user
+      put "/teams/:id", TeamController, :update
+      resources "/teams", TeamController, except: [:update, :new, :edit]
   end
 end
