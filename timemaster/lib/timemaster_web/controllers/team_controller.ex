@@ -18,13 +18,29 @@ defmodule TimemasterWeb.TeamController do
               {:ok, id} ->
                 team = Repo.get(Team, id)
                 users = Repo.all(from(u in Timemaster.Accounts.User, where: u.team_id == ^team.id))
-
                 workingtimes = Enum.flat_map(users, fn user ->
                   Repo.all(from(w in Timemaster.Work.Workingtime, where: w.user_id == ^user.id))
                 end)
-                average_times = Enum.flat_map(workingtimes, fn workingtime ->
-                  DateTime.diff(workingtime.end, workingtime.start)
+                times =
+                  workingtimes
+                  |> Enum.map(fn workingtime ->
+                    %{date: "#{workingtime.start.year()}-#{workingtime.start.month()}-#{workingtime.start.day()}", diff: DateTime.diff(workingtime.end, workingtime.start)}
+                  end)
+
+                {test, counts} = Enum.reduce(times, {%{}, %{}}, fn time, {test, counts} ->
+                  case Map.get(counts, time.date) do
+                    nil ->
+                      {Map.update(test, time.date, time.diff, &(&1 + time.diff)), Map.update(counts, time.date, 1, &(&1 + 1))}
+                    count ->
+                      {Map.update(test, time.date, time.diff, &(&1 + time.diff)), Map.update(counts, time.date, count + 1, &(&1 + 1))}
+                  end
                 end)
+
+                average_times = Enum.map(Map.to_list(test), fn {date, total_diff} ->
+                  average_diff = div(total_diff, Map.get(counts, date, 1))
+                  %{"date" => date, "average_diff" => average_diff, "total_diff" => total_diff}
+                end)
+
                 conn
                 |> json(%{average_times: average_times})
             end
