@@ -3,6 +3,7 @@ import EmployeesView from "../views/EmployeesView.vue";
 import GraphView from "../views/GraphView.vue";
 import HomeView from "../views/HomeView.vue";
 import RegisterVue from "../views/RegisterVue.vue";
+import TeamsView from "../views/TeamsView.vue";
 import UserHome from "../views/UserHome.vue";
 import WorkingTimeView from "../views/WorkingTimeView.vue";
 
@@ -32,6 +33,11 @@ const routes = [
     path: "/employees",
     name: "employees",
     component: EmployeesView,
+  },
+  {
+    path: "/teams",
+    name: "teams",
+    component: TeamsView,
   },
 ];
 
