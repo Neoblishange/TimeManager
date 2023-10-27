@@ -15,7 +15,6 @@ defmodule TimemasterWeb.ClockController do
   end
 
   def create(conn, %{"userID" => userID, "clock" => clock_params}) do
-    status_code = :ok
     start_date = nil
     end_date = nil
     case Repo.get_by(Timemaster.Accounts.User, id: userID) do
@@ -29,14 +28,14 @@ defmodule TimemasterWeb.ClockController do
           nil ->
             clock_params = Map.put(clock_params, "user_id", user.id)
             with {:ok, %Clock{} = clock} <- Time.create_clock(clock_params) do
-              clock = Repo.preload(clock, :user)
-              status_code = :created
+              conn
+              |> put_status(:ok)
+              |> json(%{message: "Clock for new day has been created"})
             end
           clock ->
             start_date = clock.time
             with {:ok, %Clock{} = clock} <- Time.update_clock(clock, clock_params) do
               clock = Repo.preload(clock, :user)
-              status_code = :ok
               end_date = Map.get(clock_params, "time") # Utilisation de la valeur dans clock_params
               case Map.get(clock_params, "status") do
                 false ->
@@ -44,12 +43,14 @@ defmodule TimemasterWeb.ClockController do
                   clock_params = Map.put(clock_params, "end", end_date)
                   conn
                   |> put_status(:ok)
-                  |> json(%{message: "Clock created"})
+                  |> json(%{message: "Clock check of the day done"})
                   WorkingTimeController.create(conn, %{"userID" => userID, "workingtime" => clock_params})
                 _ ->
-                  conn
-                  |> put_status(:bad_request)
-                  |> json(%{message: "Error while creating user clocks"})
+                  with {:ok, %Clock{} = clock} <- Time.update_clock(clock, clock_params) do
+                    conn
+                    |> put_status(:ok)
+                    |> json(%{message: "Clock for new day has been created"})
+                  end
               end
             end
         end
