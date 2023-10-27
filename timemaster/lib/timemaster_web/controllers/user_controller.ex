@@ -21,6 +21,7 @@ defmodule TimemasterWeb.UserController do
 
   def index(conn, _params) do
     users = Accounts.list_users()
+    users = Repo.preload(users, :team)
     render(conn, :index, users: users)
   end
 
