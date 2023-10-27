@@ -13,7 +13,14 @@
           Voir les équipes
         </button>
       </router-link>
-      <router-link v-if="user.isManager()" to="/employees">
+      <router-link v-if="user.isDirector()" to="/allEmployees">
+        <button
+          class="bg-white p-3 rounded-[30px] border-[#3b3fb8] text-[#3b3fb8] text-md shadow-lg"
+        >
+          Voir tout les employés
+        </button>
+      </router-link>
+      <router-link v-if="user.isManager() && !user.isDirector()" to="/employees">
         <button
           class="bg-white p-3 rounded-[30px] border-[#3b3fb8] text-[#3b3fb8] text-md shadow-lg"
         >

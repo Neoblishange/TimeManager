@@ -1,3 +1,4 @@
+import EUserRole from "../types/EUserRole";
 import User from "../types/User";
 import Fetcher from "./fetcher/fetcher";
 import Response from "./fetcher/response";
@@ -14,9 +15,12 @@ class UserAPI {
 
   public static createUser = async (
     email: string,
-    username: string
+    username: string,
+    roles: EUserRole[] = [EUserRole.EMPLOYEE]
   ): Promise<Response<User>> =>
-    Fetcher.post<User>("users", { user: { email, username } });
+    Fetcher.post<User>("users", {
+      user: { email, username, roles },
+    });
 
   public static updateUser = async (
     email: string,
