@@ -24,7 +24,7 @@ const routes = [
     component: WorkingTimeView,
   },
   {
-    path: "/workingTimes/graphs/:userID",
+    path: "/chartManager/:userID",
     name: "graph",
     component: GraphView,
   },

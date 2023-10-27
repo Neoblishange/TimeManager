@@ -20,6 +20,21 @@ class WorkingTimesAPI {
     );
   };
 
+  public static getWorkingTimesWithParams = async (
+    start: Date,
+    end: Date
+  ): Promise<Response<WorkingTime[]>> => {
+    const user = new UserProvider();
+
+    return Fetcher.get<WorkingTime[]>(
+      "workingtimes/" +
+        user.getID() +
+        "?start=" +
+        moment(start).format("YYYY-MM-DD HH:mm:ss") +
+        "&end=" +
+        moment(end).format("YYYY-MM-DD HH:mm:ss")
+    );
+  };
   public static getOne = (
     workingTimeID: string
   ): Promise<Response<WorkingTime>> => {

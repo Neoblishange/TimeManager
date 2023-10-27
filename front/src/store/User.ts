@@ -73,6 +73,15 @@ class UserProvider {
     UserProvider.save();
   };
 
+  public isEmployee = (): boolean =>
+    UserProvider.user.roles.includes(EUserRole.EMPLOYEE);
+
+  public isManager = (): boolean =>
+    UserProvider.user.roles.includes(EUserRole.MANAGER);
+
+  public isDirector = (): boolean =>
+    UserProvider.user.roles.includes(EUserRole.DIRECTOR);
+
   public isAuth = (): boolean => {
     return UserProvider.user.authToken.length > 10;
   };

@@ -22,7 +22,7 @@
         </button>
       </router-link>
       
-      <router-link :to="'/workingTimes/graphs/' + user.getID()">
+      <router-link :to="'/chartManager/' + user.getID()">
         <button
           class="bg-white p-3 rounded-[30px] border-[#3b3fb8] text-[#3b3fb8] text-md shadow-lg"
         >
