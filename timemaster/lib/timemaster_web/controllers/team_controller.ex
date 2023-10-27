@@ -24,7 +24,9 @@ defmodule TimemasterWeb.TeamController do
                 times =
                   workingtimes
                   |> Enum.map(fn workingtime ->
-                    %{date: "#{workingtime.start.year()}-#{workingtime.start.month()}-#{workingtime.start.day()}", diff: DateTime.diff(workingtime.end, workingtime.start)}
+                    if workingtime.start && workingtime.end do
+                      %{date: "#{workingtime.start.year()}-#{workingtime.start.month()}-#{workingtime.start.day()}", diff: DateTime.diff(workingtime.end, workingtime.start)}
+                    end
                   end)
 
                 {test, counts} = Enum.reduce(times, {%{}, %{}}, fn time, {test, counts} ->
@@ -96,6 +98,7 @@ defmodule TimemasterWeb.TeamController do
           user ->
             if "manager" in user.roles do
               with {:ok, %Team{} = team} <- Organisation.create_team(team_params) do
+                team = Repo.preload(team, :manager)
                 conn
                 |> put_status(:created)
                 |> put_resp_header("location", ~p"/api/teams/#{team}")
