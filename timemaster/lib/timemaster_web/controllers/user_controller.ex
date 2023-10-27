@@ -14,6 +14,7 @@ defmodule TimemasterWeb.UserController do
         |> put_status(:not_found)
         |> json(%{message: "User not found"})
       user ->
+        user = Repo.preload(user, :team)
         render(conn, :get_user_by_params, user: user)
     end
   end
@@ -25,6 +26,7 @@ defmodule TimemasterWeb.UserController do
 
   def create(conn, %{"user" => user_params}) do
     with {:ok, %User{} = user} <- Accounts.create_user(user_params) do
+      user = Repo.preload(user, :team)
       conn
       |> put_status(:created)
       |> put_resp_header("location", ~p"/api/users/#{user}")
@@ -39,6 +41,7 @@ defmodule TimemasterWeb.UserController do
         |> put_status(:not_found)
         |> json(%{message: "User not found"})
       user ->
+        user = Repo.preload(user, :team)
         render(conn, :show, user: user)
     end
   end
@@ -51,6 +54,7 @@ defmodule TimemasterWeb.UserController do
         |> json(%{message: "User not found"})
       user ->
         with {:ok, %User{} = user} <- Accounts.update_user(user, user_params) do
+          user = Repo.preload(user, :team)
           render(conn, :show, user: user)
         end
     end
@@ -68,5 +72,11 @@ defmodule TimemasterWeb.UserController do
           |> json(%{message: "User deleted"})
         end
     end
+  end
+
+  def delete_all(conn, _params) do
+    Repo.delete_all(User)
+    conn
+    |> json(%{message: "All users have been deleted"})
   end
 end
