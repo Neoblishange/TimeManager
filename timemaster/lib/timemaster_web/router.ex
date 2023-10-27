@@ -8,6 +8,7 @@ defmodule TimemasterWeb.Router do
   scope "/api", TimemasterWeb do
     pipe_through :api
       get "/users", UserController, :get_user_by_params
+      get "/users/all", UserController, :index
       put "/users/:id", UserController, :update
       delete "/users", UserController, :delete_all
       resources "/users", UserController, except: [:index, :new, :edit, :update]
