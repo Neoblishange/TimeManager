@@ -5,6 +5,7 @@ defmodule TimemasterWeb.ClockController do
   alias Timemaster.Time.Clock
   alias Timemaster.Repo
   import Ecto.Query
+  alias TimemasterWeb.WorkingTimeController
 
   action_fallback TimemasterWeb.FallbackController
 
@@ -14,23 +15,47 @@ defmodule TimemasterWeb.ClockController do
   end
 
   def create(conn, %{"userID" => userID, "clock" => clock_params}) do
+    status_code = :ok
+    start_date = nil
+    end_date = nil
     case Repo.get_by(Timemaster.Accounts.User, id: userID) do
       nil ->
         conn
         |> put_status(:bad_request)
         |> json(%{message: "Error while creating user clocks"})
+
       user ->
-        clock_params = Map.put(clock_params, "user_id", user.id)
-        with {:ok, %Clock{} = clock} <- Time.create_clock(clock_params) do
-          clock = Repo.preload(clock, :user)
-          conn
-          |> put_status(:created)
-          |> put_resp_header("location", ~p"/api/clocks/#{clock.id}")
-          |> render(:show, clock: clock)
+        case Repo.get_by(Clock, user_id: userID) do
+          nil ->
+            clock_params = Map.put(clock_params, "user_id", user.id)
+            with {:ok, %Clock{} = clock} <- Time.create_clock(clock_params) do
+              clock = Repo.preload(clock, :user)
+              status_code = :created
+            end
+          clock ->
+            start_date = clock.time
+            with {:ok, %Clock{} = clock} <- Time.update_clock(clock, clock_params) do
+              clock = Repo.preload(clock, :user)
+              status_code = :ok
+              end_date = Map.get(clock_params, "time") # Utilisation de la valeur dans clock_params
+              case Map.get(clock_params, "status") do
+                false ->
+                  clock_params = Map.put(clock_params, "start", start_date)
+                  clock_params = Map.put(clock_params, "end", end_date)
+                  conn
+                  |> put_status(:ok)
+                  |> json(%{message: "Clock created"})
+                  WorkingTimeController.create(conn, %{"userID" => userID, "workingtime" => clock_params})
+                _ ->
+                  conn
+                  |> put_status(:bad_request)
+                  |> json(%{message: "Error while creating user clocks"})
+              end
+            end
         end
     end
-
   end
+
 
   def user_clocks(conn, %{"userID" => userID}) do
     case Repo.get_by(Timemaster.Accounts.User, id: userID) do
