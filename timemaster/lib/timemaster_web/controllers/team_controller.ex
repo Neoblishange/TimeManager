@@ -9,6 +9,23 @@ defmodule TimemasterWeb.TeamController do
 
   action_fallback TimemasterWeb.FallbackController
 
+  def get_users(conn, params) do
+    case Map.fetch(params, "id") do
+      {:ok, id} ->
+        case Repo.get(Team, id) do
+          nil ->
+            conn
+            |> put_status(:bad_request)
+            |> json(%{message: "Team not found"})
+          team ->
+            users = Repo.all(from(u in Timemaster.Accounts.User, where: u.team_id == ^team.id))
+            conn
+            |> put_status(:ok)
+            |> json(%{data: users})
+        end
+    end
+  end
+
   def get_avg_workingtimes(conn, params) do
     case Map.fetch(params, "start") do
       {:ok, startTime} ->
@@ -16,35 +33,41 @@ defmodule TimemasterWeb.TeamController do
           {:ok, endTime} ->
             case Map.fetch(params, "id") do
               {:ok, id} ->
-                team = Repo.get(Team, id)
-                users = Repo.all(from(u in Timemaster.Accounts.User, where: u.team_id == ^team.id))
-                workingtimes = Enum.flat_map(users, fn user ->
-                  Repo.all(from(w in Timemaster.Work.Workingtime, where: w.user_id == ^user.id))
-                end)
-                times =
-                  workingtimes
-                  |> Enum.map(fn workingtime ->
-                    if workingtime.start && workingtime.end do
-                      %{date: "#{workingtime.start.year()}-#{workingtime.start.month()}-#{workingtime.start.day()}", diff: DateTime.diff(workingtime.end, workingtime.start)}
-                    end
-                  end)
+                case Repo.get(Team, id) do
+                  nil ->
+                    conn
+                    |> put_status(:bad_request)
+                    |> json(%{message: "Team not found"})
+                  team ->
+                    users = Repo.all(from(u in Timemaster.Accounts.User, where: u.team_id == ^team.id))
+                    workingtimes = Enum.flat_map(users, fn user ->
+                      Repo.all(from(w in Timemaster.Work.Workingtime, where: w.user_id == ^user.id))
+                    end)
+                    times =
+                      workingtimes
+                      |> Enum.map(fn workingtime ->
+                        if workingtime.start && workingtime.end do
+                          %{date: "#{workingtime.start.year()}-#{workingtime.start.month()}-#{workingtime.start.day()}", diff: DateTime.diff(workingtime.end, workingtime.start)}
+                        end
+                      end)
 
-                {test, counts} = Enum.reduce(times, {%{}, %{}}, fn time, {test, counts} ->
-                  case Map.get(counts, time.date) do
-                    nil ->
-                      {Map.update(test, time.date, time.diff, &(&1 + time.diff)), Map.update(counts, time.date, 1, &(&1 + 1))}
-                    count ->
-                      {Map.update(test, time.date, time.diff, &(&1 + time.diff)), Map.update(counts, time.date, count + 1, &(&1 + 1))}
-                  end
-                end)
+                    {test, counts} = Enum.reduce(times, {%{}, %{}}, fn time, {test, counts} ->
+                      case Map.get(counts, time.date) do
+                        nil ->
+                          {Map.update(test, time.date, time.diff, &(&1 + time.diff)), Map.update(counts, time.date, 1, &(&1 + 1))}
+                        count ->
+                          {Map.update(test, time.date, time.diff, &(&1 + time.diff)), Map.update(counts, time.date, count + 1, &(&1 + 1))}
+                      end
+                    end)
 
-                average_times = Enum.map(Map.to_list(test), fn {date, total_diff} ->
-                  average_diff = div(total_diff, Map.get(counts, date, 1))
-                  %{"date" => date, "average_diff" => average_diff, "total_diff" => total_diff}
-                end)
+                    average_times = Enum.map(Map.to_list(test), fn {date, total_diff} ->
+                      average_diff = div(total_diff, Map.get(counts, date, 1))
+                      %{"date" => date, "average_diff" => average_diff, "total_diff" => total_diff}
+                    end)
 
-                conn
-                |> json(%{average_times: average_times})
+                    conn
+                    |> json(%{average_times: average_times})
+                end
             end
         end
     end

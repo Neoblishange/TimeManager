@@ -21,6 +21,7 @@ defmodule TimemasterWeb.Router do
       get "/clocks/:userID", ClockController, :user_clocks
       post "/clocks/:userID", ClockController, :create
 
+      get "/teams/:id/users", TeamController, :get_users
       get "/teams/:id/avg", TeamController, :get_avg_workingtimes
       post "/teams/:userID/:id", TeamController, :add_user
       put "/teams/:id", TeamController, :update
