@@ -48,6 +48,11 @@ watch(employeeID, () => {
     });
   }
 });
+
+const removeUserFromTeam = (userID: string) =>
+  TeamsAPI.removeUserToTeam(userID).then(() => {
+    loadData();
+  });
 </script>
 
 <template>
@@ -129,7 +134,7 @@ watch(employeeID, () => {
                 Il n'y a pas d'utilisateurs dans cette équipe
               </div>
               <div v-for="user in teamUsers" class="flex flex-row">
-                <button>
+                <button @click="removeUserFromTeam(user.id)">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     class="icon icon-tabler icon-tabler-trash"

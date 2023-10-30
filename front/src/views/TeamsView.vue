@@ -21,6 +21,8 @@ const deleteTeam = (team: Team) => {
     loadData();
   });
 };
+
+const headers = ["Nom", "Manager"];
 </script>
 
 <template>
@@ -30,34 +32,37 @@ const deleteTeam = (team: Team) => {
     <TeamAdd @on-create="loadData()" />
     <div>Les équipes</div>
     <div class="flex flex-col gap-2 min-w-[300px] w-1/2">
-      <table class="w-full">
+      <table
+        class="w-full table-auto mt-10 border-separate border-spacing-x-2 border-spacing-y-5"
+      >
         <thead>
           <tr>
-            <td>
-              <div class="w-full flex flex-row items-center justify-center">
-                Nom
-              </div>
-            </td>
-            <td>
-              <div class="w-full flex flex-row items-center justify-center">
-                Manager
-              </div>
+            <td
+              v-for="header in headers"
+              class="text-center justify-center text-lg font-bold border border-slate-600"
+            >
+              {{ header }}
             </td>
             <td></td>
           </tr>
         </thead>
         <tbody>
-          <template v-for="team in teams">
-            <tr>
-              <td>
+          <template v-for="(team, index) in teams">
+            <tr
+              :class="
+                'my-10 ' +
+                (index % 2 === 0 ? ' bg-orange-100 ' : ' bg-blue-100 ')
+              "
+            >
+              <td class="text-center py-2 px-10">
                 {{ team.name }}
               </td>
-              <td>
+              <td class="text-center py-2 px-10">
                 {{ team.manager.username }}
               </td>
-              <td>
+              <td class="text-center py-2 px-2 ">
                 <TeamUpdate @on-create="loadData()" :id="team.id" />
-                <button @click="deleteTeam(team)">
+                <button @click="deleteTeam(team)" class="hover:bg-red-400">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     class="icon icon-tabler icon-tabler-trash"
