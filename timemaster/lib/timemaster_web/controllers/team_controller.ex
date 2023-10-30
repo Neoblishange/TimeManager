@@ -133,10 +133,15 @@ defmodule TimemasterWeb.TeamController do
             if "manager" in user.roles do
               with {:ok, %Team{} = team} <- Organisation.create_team(team_params) do
                 team = Repo.preload(team, :manager)
-                conn
-                |> put_status(:created)
-                |> put_resp_header("location", ~p"/api/teams/#{team}")
-                |> render(:show, team: team)
+                params = %{
+                  "team_id" => team.id,
+                }
+                with {:ok, updated_user} <- Timemaster.Accounts.update_user(user, params) do
+                  conn
+                  |> put_status(:created)
+                  |> put_resp_header("location", ~p"/api/teams/#{team}")
+                  |> render(:show, team: team)
+                end
               end
             else
               conn

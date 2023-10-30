@@ -76,10 +76,9 @@ defmodule TimemasterWeb.UserController do
   end
 
   def delete_all(conn, _params) do
-    teams = Repo.all(Timemaster.Organisation.Team)
+    Repo.update_all(Timemaster.Organisation.Team, set: [manager_id: nil])
     Repo.delete_all(User)
     conn
     |> json(%{message: "All users have been deleted"})
   end
-
 end
