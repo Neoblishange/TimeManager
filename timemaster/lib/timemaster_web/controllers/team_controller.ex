@@ -144,7 +144,8 @@ defmodule TimemasterWeb.TeamController do
         |> json(%{message: "Team not found"})
       team ->
         team = Repo.preload(team, :manager)
-        render(conn, :show, team: team)
+        conn
+        |> json(%{team: team})
     end
   end
 
@@ -157,7 +158,8 @@ defmodule TimemasterWeb.TeamController do
       team ->
         team = Repo.preload(team, :manager)
         with {:ok, %Team{} = team} <- Organisation.update_team(team, team_params) do
-          render(conn, :show, team: team)
+          conn
+          |> json(%{message: "Team has been updated"})
         end
     end
   end
