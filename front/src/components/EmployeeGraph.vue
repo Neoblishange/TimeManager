@@ -11,13 +11,13 @@ const props = defineProps<{
 
 const workingTimesData = ref<LineGraphData>({
   labels: [
-    moment().format("DD/MM"),
-    moment().subtract(1, "d").format("DD/MM"),
-    moment().subtract(2, "d").format("DD/MM"),
     moment().subtract(3, "d").format("DD/MM"),
+    moment().subtract(2, "d").format("DD/MM"),
+    moment().subtract(1, "d").format("DD/MM"),
+    moment().format("DD/MM"),
   ],
   data: {
-    label: "Heures",
+    label: "secondes",
     values: [0, 0, 0, 0],
   },
 });
@@ -26,10 +26,10 @@ const summarizeWorkingTime = (times: WorkingTime[]) => {
   let sum = 0;
 
   for (const time of times) {
-    sum += Math.abs(moment(time.start).diff(moment(time.end), "minutes"));
+    sum += Math.abs(moment(time.start).diff(moment(time.end), "s"));
   }
 
-  return Math.round(sum / 60);
+  return sum;
 };
 
 const loadData = () => {
@@ -54,10 +54,10 @@ const loadData = () => {
       return timesPerDays;
     })
     .then((times) => [
-      summarizeWorkingTime(times[0]),
-      summarizeWorkingTime(times[1]),
-      summarizeWorkingTime(times[2]),
       summarizeWorkingTime(times[3]),
+      summarizeWorkingTime(times[2]),
+      summarizeWorkingTime(times[1]),
+      summarizeWorkingTime(times[0]),
     ])
     .then((times) => {
       workingTimesData.value = {

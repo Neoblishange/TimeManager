@@ -49,14 +49,41 @@ const chartDataFirst = computed(() => ({
     },
   ],
 }));
+
+const formatTime = (secondes: number): string => {
+  const hours = Math.floor(secondes / 3600);
+  const minutes = Math.floor((secondes % 3600) / 60);
+  const secs = secondes % 60;
+
+  const hoursStr = hours.toString().padStart(2, "0");
+  const minutesStr = minutes.toString().padStart(2, "0");
+  const secsStr = secs.toString().padStart(2, "0");
+
+  return `${hoursStr}:${minutesStr}:${secsStr}`;
+};
+
+const chartOptions = computed(() => {
+  return {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: true,
+      },
+      tooltip: {
+        callbacks: {
+          label: (context: any) => {
+            if (context.parsed.y !== null) {
+              return formatTime(context.parsed.y);
+            }
+            return "";
+          },
+        },
+      },
+    },
+  };
+});
 </script>
 
 <template>
-  <Line
-    id="first"
-    :options="{
-      responsive: true,
-    }"
-    :data="chartDataFirst"
-  />
+  <Line id="first" :options="chartOptions" :data="chartDataFirst" />
 </template>
