@@ -7,20 +7,19 @@ import UserProvider from "../store/User";
 
 const user = new UserProvider();
 
-console.log("user",user.getID());
-
 const userData = ref({
   email: "",
   username: "",
 });
 
 const deleteAccount = () =>
-  UserAPI.deleteUser().then(() => {
+  UserAPI.deleteUser(user.getID()).then(() => {
     user.disconnect();
     router.push("/");
   });
 
-const saveAccount = () => UserAPI.updateUser(userData.value.email, userData.value.username);
+const saveAccount = () =>
+  UserAPI.updateUser(userData.value.email, userData.value.username);
 </script>
 
 <template>
@@ -54,7 +53,7 @@ const saveAccount = () => UserAPI.updateUser(userData.value.email, userData.valu
       </div>
 
       <button
-        class="bg-[#3b3fb8] p-3 rounded-[30px] border-black text-white text-md shadow-2xl"
+        class="bg-[#3b3fb8] p-3 rounded-[30px] border-black text-white text-md shadow-lg"
         @click="saveAccount()"
       >
         Sauvegarder
@@ -62,7 +61,7 @@ const saveAccount = () => UserAPI.updateUser(userData.value.email, userData.valu
     </div>
 
     <button
-      class="mt-20 bg-white p-3 rounded-[30px] border-red-500 border-2 text-red-500 text-md shadow-2xl"
+      class="mt-20 bg-white p-3 rounded-[30px] border-red-500 border-2 text-red-500 text-md shadow-lg"
       @click="deleteAccount()"
     >
       Supprimer son compte

@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import UserAPI from "../api/user.api";
-import HeaderVue from "../components/HeaderVue.vue";
-import router from "../router";
-import UserProvider from "../store/User";
+import EUserRole from "../types/EUserRole";
+
+const emits = defineEmits<{
+  onCreate: [];
+}>();
+
+const modalOpen = ref(false);
 
 const formStep = ref(0);
 const MAX_STEP = ref(2);
 const showPassword = ref(false);
 const showConfirmation = ref(false);
-const formData = ref({ email: "", username: "" });
-const user = new UserProvider();
+const formData = ref({ email: "", username: "", roles: [] as EUserRole[] });
 
 const prevStep = () => {
   if (formStep.value > 0) formStep.value--;
@@ -21,29 +24,60 @@ const nextStep = () => {
 };
 
 const register = () => {
-  UserAPI.createUser(formData.value.email, formData.value.username)
-    .then((res) => {
-      user.setEmail(res.data.email);
-      user.setUsername(res.data.username);
-      user.setID(res.data.id);
-      user.setToken("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
-      user.setRoles(res.data.roles)
-    })
-    .then(() => router.push("/user"));
+  UserAPI.createUser(
+    formData.value.email,
+    formData.value.username,
+    formData.value.roles
+  ).then(() => {
+    loadData();
+    emits("onCreate");
+    modalOpen.value = false;
+  });
 };
+
+const loadData = () => {};
 </script>
 
 <template>
-  <HeaderVue />
-
-  <div class="h-full flex justify-center items-center">
-    <div class="w-[500px]">
-      <div class="bg-[#fcb795] rounded-2xl border-4 border-[#fcb795]">
-        <div class="p-5 bg-[#fcb795] text-white">
-          <h1 class="text-2xl">Bienvenue sur Time Master</h1>
-          <h3>Créer votre compte</h3>
-        </div>
+  <button
+    @click="modalOpen = true"
+    class="bg-[#3b3fb8] p-3 rounded-[30px] text-white text-md shadow-lg"
+  >
+    Ajouter un employé
+  </button>
+  <div
+    v-if="modalOpen"
+    class="h-screen w-screen fixed top-0 left-0 flex items-center justify-center z-[2200]"
+  >
+    <div
+      class="z-[2201] h-screen w-screen absolute top-0 left-0 bg-black opacity-60"
+    ></div>
+    <div class="z-[2210]">
+      <div
+        class="bg-white p-10 flex justify-center items-center flex-col gap-6 rounded-lg relative border-4 border-[#fcb795]"
+      >
         <div class="flex flex-col items-center gap-6 bg-white p-5 rounded-xl">
+          <div class="absolute top-5 right-5">
+            <button @click="modalOpen = false">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="icon icon-tabler icon-tabler-x"
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path d="M18 6l-12 12"></path>
+                <path d="M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+
           <div
             v-if="formStep === 0"
             class="w-full flex flex-col items-center gap-6"
@@ -67,7 +101,11 @@ const register = () => {
               >
               <div class="flex items-center ml-5">
                 <input
-                  checked
+                  @change="
+                    () => {
+                      formData.roles = [EUserRole.EMPLOYEE];
+                    }
+                  "
                   id="employee"
                   type="radio"
                   value=""
@@ -78,6 +116,11 @@ const register = () => {
               </div>
               <div class="flex items-center ml-5">
                 <input
+                  @change="
+                    () => {
+                      formData.roles = [EUserRole.EMPLOYEE, EUserRole.MANAGER];
+                    }
+                  "
                   id="manager"
                   type="radio"
                   value=""
@@ -88,6 +131,15 @@ const register = () => {
               </div>
               <div class="flex items-center ml-5">
                 <input
+                  @change="
+                    () => {
+                      formData.roles = [
+                        EUserRole.EMPLOYEE,
+                        EUserRole.MANAGER,
+                        EUserRole.DIRECTOR,
+                      ];
+                    }
+                  "
                   id="director"
                   type="radio"
                   value=""
@@ -262,15 +314,9 @@ const register = () => {
               @click="register()"
               class="bg-[#fcb795] p-3 rounded-[30px] border-black text-white text-md shadow-lg min-w-[150px]"
             >
-              Connection
+              Ajouter
             </button>
           </div>
-          <p>
-            Déjà un compte ?
-            <router-link class="underline text-[#fcb795] cursor-pointer" to="/">
-              Se connecter !
-            </router-link>
-          </p>
         </div>
       </div>
     </div>

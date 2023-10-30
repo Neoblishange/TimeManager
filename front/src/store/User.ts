@@ -1,4 +1,6 @@
+import UserAPI from "../api/user.api";
 import EUserRole from "../types/EUserRole";
+import Team from "../types/Team";
 import User from "../types/User";
 
 class UserProvider {
@@ -25,6 +27,13 @@ class UserProvider {
     UserProvider.save();
   };
 
+  public getTeam = (): Team | undefined => {
+    if (UserProvider.user.team) return UserProvider.user.team;
+    else {
+      UserProvider.loadUser();
+      return UserProvider.user.team;
+    }
+  };
   public getEmail = (): string => {
     if (UserProvider.user.email) return UserProvider.user.email;
     else {
@@ -73,6 +82,15 @@ class UserProvider {
     UserProvider.save();
   };
 
+  public isEmployee = (): boolean =>
+    UserProvider.user.roles.includes(EUserRole.EMPLOYEE);
+
+  public isManager = (): boolean =>
+    UserProvider.user.roles.includes(EUserRole.MANAGER);
+
+  public isDirector = (): boolean =>
+    UserProvider.user.roles.includes(EUserRole.DIRECTOR);
+
   public isAuth = (): boolean => {
     return UserProvider.user.authToken.length > 10;
   };
@@ -87,6 +105,7 @@ class UserProvider {
       username: userParsed.username ?? "",
       authToken: userParsed.authToken ?? "",
       roles: userParsed.roles ?? [],
+      team: userParsed.team ?? undefined,
     };
     return;
   };
@@ -115,6 +134,13 @@ class UserProvider {
     // }
 
     UserProvider.save();
+  };
+
+  public reload = async () => {
+    UserProvider.user = {
+      ...(await UserAPI.getUserWithID(UserProvider.user.id)).data,
+      authToken: UserProvider.user.authToken,
+    };
   };
 
   private static save = () => {

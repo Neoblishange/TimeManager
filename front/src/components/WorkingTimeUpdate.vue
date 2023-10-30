@@ -1,3 +1,33 @@
+<script setup lang="ts">
+import VueDatePicker from "@vuepic/vue-datepicker";
+import moment from "moment";
+import { ref } from "vue";
+import WorkingTimesAPI from "../api/workingTimes.api";
+import WorkingTime from "../types/WorkingTimes";
+
+const emits = defineEmits<{
+  update: [];
+  close: [];
+}>();
+
+const props = defineProps<{
+  time: WorkingTime;
+}>();
+
+const dateValue = ref([props.time.start, props.time.end]);
+
+const update = () => {
+  WorkingTimesAPI.update({
+    ...props.time,
+    start: new Date(dateValue.value[0]),
+    end: new Date(dateValue.value[1]),
+  }).then(() => {
+    emits("update");
+    emits("close");
+  });
+};
+</script>
+
 <template>
   <div
     class="h-screen w-screen fixed top-0 left-0 flex items-center justify-center z-[2200]"
@@ -31,17 +61,43 @@
         </div>
         <div class="mt-4">Modifier une plage horaire</div>
         <div class="w-full flex flex-row gap-2 max-w-[300px]">
-          <vue-tailwind-datepicker
-            v-model="dateValue"
-            as-single
-            use-range
-            :shortcuts="false"
-          />
+          <div>
+            <VueDatePicker v-model="dateValue[0]">
+              <template #action-row="{ internalModelValue, selectDate }">
+                <div class="action-row flex flex-col justify-center w-full">
+                  <p class="current-selection text-center">
+                    {{ moment(internalModelValue).format("DD-MM-YYYY HH:mm") }}
+                  </p>
+                  <button
+                    @click="selectDate"
+                    class="select-button bg-[#3b3fb8] p-3 rounded-[30px] text-white text-md shadow-lg"
+                  >
+                    Valider
+                  </button>
+                </div>
+              </template>
+            </VueDatePicker>
+            <VueDatePicker v-model="dateValue[1]">
+              <template #action-row="{ internalModelValue, selectDate }">
+                <div class="action-row flex flex-col justify-center w-full">
+                  <p class="current-selection text-center">
+                    {{ moment(internalModelValue).format("DD-MM-YYYY HH:mm") }}
+                  </p>
+                  <button
+                    @click="selectDate"
+                    class="select-button bg-[#3b3fb8] p-3 rounded-[30px] text-white text-md shadow-lg"
+                  >
+                    Valider
+                  </button>
+                </div>
+              </template>
+            </VueDatePicker>
+          </div>
         </div>
 
         <button
           @click="update()"
-          class="bg-[#3b3fb8] p-3 rounded-[30px] border-black text-white text-md shadow-2xl"
+          class="bg-[#3b3fb8] p-3 rounded-[30px] border-black text-white text-md shadow-lg"
         >
           Modifier
         </button>
@@ -49,36 +105,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import moment from "moment";
-import { ref } from "vue";
-import VueTailwindDatepicker from "vue-tailwind-datepicker";
-import WorkingTimesAPI from "../api/workingTimes.api";
-import WorkingTime from "../types/WorkingTimes";
-
-const emits = defineEmits<{
-  update: [];
-  close: [];
-}>();
-
-const props = defineProps<{
-  time: WorkingTime;
-}>();
-
-const dateValue = ref([
-  moment(props.time.start).format("YYYY-MM-DD HH:mm:ss"),
-  moment(props.time.end).format("YYYY-MM-DD HH:mm:ss"),
-]);
-
-const update = () => {
-  WorkingTimesAPI.update({
-    ...props.time,
-    start: new Date(dateValue.value[0]),
-    end: new Date(dateValue.value[1]),
-  }).then(() => {
-    emits("update");
-    emits("close");
-  });
-};
-</script>
