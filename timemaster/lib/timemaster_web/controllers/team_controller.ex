@@ -66,7 +66,7 @@ defmodule TimemasterWeb.TeamController do
                     end)
 
                     conn
-                    |> json(%{average_times: average_times})
+                    |> json(%{data: average_times})
                 end
             end
         end
@@ -80,24 +80,35 @@ defmodule TimemasterWeb.TeamController do
         |> put_status(:bad_request)
         |> json(%{message: "User not found"})
       user ->
-        case Repo.get(Team, id) do
-          nil ->
-            conn
-            |> put_status(:bad_request)
-            |> json(%{message: "Team not found"})
-          team ->
+        case id do
+          "remove" ->
             updated_user_params = %{
-              "team_id" => team.id,
+              "team_id" => nil,
             }
-            with {:ok, %Timemaster.Accounts.User{} = user} <- Timemaster.Accounts.update_user(user, updated_user_params) do
+            with {:ok, updated_user} <- Timemaster.Accounts.update_user(user, updated_user_params) do
               conn
               |> put_status(:ok)
-              |> json(%{user: %{"user" => user, "team" => team}})
+              |> json(%{data: %{user: updated_user, team: nil}})
+            end
+          _ ->
+            case Repo.get(Team, id) do
+              nil ->
+                conn
+                |> put_status(:bad_request)
+                |> json(%{message: "Team not found"})
+              team ->
+                updated_user_params = %{
+                  "team_id" => team.id,
+                }
+                with {:ok, updated_user} <- Timemaster.Accounts.update_user(user, updated_user_params) do
+                  conn
+                  |> put_status(:ok)
+                  |> json(%{data: %{user: updated_user, team: team}})
+                end
             end
         end
     end
   end
-
 
   def index(conn, _params) do
     teams = Organisation.list_teams()
@@ -145,7 +156,7 @@ defmodule TimemasterWeb.TeamController do
       team ->
         team = Repo.preload(team, :manager)
         conn
-        |> json(%{team: team})
+        |> json(%{data: team})
     end
   end
 
