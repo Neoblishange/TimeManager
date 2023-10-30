@@ -11,10 +11,19 @@ class UserAPI {
     Fetcher.get<User[]>("/users/all");
 
   public static getAllManagers = async (): Promise<Response<User[]>> =>
-    Fetcher.get<User[]>("/users/all").then((res) => ({
+    this.getAllUsers().then((res) => ({
       ...res,
       data: res.data.filter(
         (user) => user.roles.length === 2 && user.roles[1] === EUserRole.MANAGER
+      ),
+    }));
+
+  public static getAllEmployee = async (): Promise<Response<User[]>> =>
+    this.getAllUsers().then((res) => ({
+      ...res,
+      data: res.data.filter(
+        (user) =>
+          user.roles.length === 1 && user.roles[0] === EUserRole.EMPLOYEE
       ),
     }));
 

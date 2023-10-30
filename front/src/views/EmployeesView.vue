@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import teamsAPI from "../api/teams.api";
+import TeamsAPI from "../api/teams.api";
 import HeaderVue from "../components/HeaderVue.vue";
 import UserProvider from "../store/User";
 import Team from "../types/Team";
@@ -11,7 +11,7 @@ const team = ref<Team | undefined>(user.getTeam());
 const teamName = ref("");
 
 const createTeam = () => {
-  teamsAPI.createTeam(teamName.value, user.getID()).then(() => {
+  TeamsAPI.createTeam(teamName.value, user.getID()).then(() => {
     user.reload();
   });
 };

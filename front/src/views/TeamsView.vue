@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import teamsAPI from "../api/teams.api";
+import TeamsAPI from "../api/teams.api";
 import HeaderVue from "../components/HeaderVue.vue";
 import TeamAdd from "../components/TeamAdd.vue";
 import TeamUpdate from "../components/TeamUpdate.vue";
@@ -13,11 +13,11 @@ onMounted(() => {
 });
 
 const loadData = () => {
-  teamsAPI.getAllTeams().then((res) => (teams.value = res.data));
+  TeamsAPI.getAllTeams().then((res) => (teams.value = res.data));
 };
 
 const deleteTeam = (team: Team) => {
-  teamsAPI.deleteTeam(team.id).then(() => {
+  TeamsAPI.deleteTeam(team.id).then(() => {
     loadData();
   });
 };

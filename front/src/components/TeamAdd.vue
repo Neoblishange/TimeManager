@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import teamsAPI from "../api/teams.api";
+import TeamsAPI from "../api/teams.api";
 import UserAPI from "../api/user.api";
 import User from "../types/User";
 
@@ -12,7 +12,7 @@ const modalOpen = ref(false);
 const formData = ref({ name: "", managerID: "" });
 
 const addTeam = () => {
-  teamsAPI
+  TeamsAPI
     .createTeam(formData.value.name, formData.value.managerID)
     .then(() => {
       formData.value = { name: "", managerID: "" };
@@ -88,11 +88,9 @@ onMounted(() => {
               />
             </div>
             <div class="w-full">
-              <label
-                for="managers"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >Manager d'équipe</label
-              >
+              <label for="managers" class="block mb-2 text-sm text-dark"
+                >Manager d'équipe <span class="text-red-600">*</span>
+              </label>
               <select
                 v-model="formData.managerID"
                 id="managers"
