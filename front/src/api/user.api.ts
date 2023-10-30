@@ -7,6 +7,17 @@ class UserAPI {
   public static getUserWithID = async (id: string): Promise<Response<User>> =>
     Fetcher.get<User>("users/" + id);
 
+  public static getAllUsers = async (): Promise<Response<User[]>> =>
+    Fetcher.get<User[]>("/users/all");
+
+  public static getAllManagers = async (): Promise<Response<User[]>> =>
+    Fetcher.get<User[]>("/users/all").then((res) => ({
+      ...res,
+      data: res.data.filter(
+        (user) => user.roles.length === 2 && user.roles[1] === EUserRole.MANAGER
+      ),
+    }));
+
   public static getUserWithParams = async (
     email: string,
     username: string

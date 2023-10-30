@@ -2,7 +2,7 @@ import Team from "../types/Team";
 import Fetcher from "./fetcher/fetcher";
 import Response from "./fetcher/response";
 
-class teamsAPI {
+class TeamsAPI {
   public static getAllTeams = async (): Promise<Response<Team[]>> =>
     Fetcher.get<Team[]>("teams");
 
@@ -32,6 +32,9 @@ class teamsAPI {
 
   public static deleteTeam = async (id: string): Promise<Response<Team>> =>
     Fetcher.delete(`teams/${id}`);
+
+  public static teamUsers = async (id: string): Promise<Response<Team>> =>
+    Fetcher.delete(`teams/${id}/users`);
 }
 
-export default teamsAPI;
+export default TeamsAPI;
