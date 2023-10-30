@@ -66,7 +66,7 @@ defmodule TimemasterWeb.TeamController do
                     end)
 
                     conn
-                    |> json(%{average_times: average_times})
+                    |> json(%{data: average_times})
                 end
             end
         end
@@ -88,7 +88,7 @@ defmodule TimemasterWeb.TeamController do
             with {:ok, updated_user} <- Timemaster.Accounts.update_user(user, updated_user_params) do
               conn
               |> put_status(:ok)
-              |> json(%{user: updated_user, team: nil})
+              |> json(%{data: %{user: updated_user, team: nil}})
             end
           _ ->
             case Repo.get(Team, id) do
@@ -103,14 +103,12 @@ defmodule TimemasterWeb.TeamController do
                 with {:ok, updated_user} <- Timemaster.Accounts.update_user(user, updated_user_params) do
                   conn
                   |> put_status(:ok)
-                  |> json(%{user: updated_user, team: team})
+                  |> json(%{data: %{user: updated_user, team: team}})
                 end
             end
         end
     end
   end
-
-
 
   def index(conn, _params) do
     teams = Organisation.list_teams()
@@ -158,7 +156,7 @@ defmodule TimemasterWeb.TeamController do
       team ->
         team = Repo.preload(team, :manager)
         conn
-        |> json(%{team: team})
+        |> json(%{data: team})
     end
   end
 

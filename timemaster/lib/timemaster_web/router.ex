@@ -19,7 +19,7 @@ defmodule TimemasterWeb.Router do
       put "/workingtimes/:id", WorkingTimeController, :update
       resources "/workingtimes", WorkingTimeController, except: [:create, :show, :index, :new, :edit, :update]
 
-      get "/clocks/:userID", ClockController, :user_clocks
+      get "/clocks/:userID", ClockController, :user_clock
       post "/clocks/:userID", ClockController, :create
 
       get "/teams/:id/users", TeamController, :get_users
