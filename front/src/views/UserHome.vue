@@ -7,20 +7,19 @@ import UserProvider from "../store/User";
 
 const user = new UserProvider();
 
-console.log("user",user.getID());
-
 const userData = ref({
   email: "",
   username: "",
 });
 
 const deleteAccount = () =>
-  UserAPI.deleteUser().then(() => {
+  UserAPI.deleteUser(user.getID()).then(() => {
     user.disconnect();
     router.push("/");
   });
 
-const saveAccount = () => UserAPI.updateUser(userData.value.email, userData.value.username);
+const saveAccount = () =>
+  UserAPI.updateUser(userData.value.email, userData.value.username);
 </script>
 
 <template>

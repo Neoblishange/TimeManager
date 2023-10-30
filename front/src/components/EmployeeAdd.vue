@@ -3,6 +3,10 @@ import { ref } from "vue";
 import UserAPI from "../api/user.api";
 import EUserRole from "../types/EUserRole";
 
+const emits = defineEmits<{
+  onCreate: [];
+}>();
+
 const modalOpen = ref(false);
 
 const formStep = ref(0);
@@ -26,6 +30,7 @@ const register = () => {
     formData.value.roles
   ).then(() => {
     loadData();
+    emits("onCreate");
     modalOpen.value = false;
   });
 };

@@ -8,7 +8,10 @@ class UserAPI {
     Fetcher.get<User>("users/" + id);
 
   public static getAllUsers = async (): Promise<Response<User[]>> =>
-    Fetcher.get<User[]>("/users/all");
+    Fetcher.get<User[]>("/users/all").then((res) => ({
+      ...res,
+      data: res.data.sort((a, b) => a.username.localeCompare(b.username)),
+    }));
 
   public static getAllManagers = async (): Promise<Response<User[]>> =>
     this.getAllUsers().then((res) => ({
@@ -48,8 +51,21 @@ class UserAPI {
   ): Promise<Response<User>> =>
     Fetcher.put<User>("users", { user: { email, username } });
 
-  public static deleteUser = async (): Promise<Response<User>> =>
-    Fetcher.delete<User>("users");
+  public static deleteUser = async (id: string): Promise<Response<User>> =>
+    Fetcher.delete<User>(`users/${id}`);
+
+  public static setManagerUser = async (id: string): Promise<Response<User>> =>
+    Fetcher.put(`users/${id}`, {
+      user: {
+        roles: ["employee", "manager"],
+      },
+    });
+  public static setEmployeeUser = async (id: string): Promise<Response<User>> =>
+    Fetcher.put(`users/${id}`, {
+      user: {
+        roles: ["employee"],
+      },
+    });
 
   public static login = ({
     email,
