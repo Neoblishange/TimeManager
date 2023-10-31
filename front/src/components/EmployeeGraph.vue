@@ -16,9 +16,6 @@ const dateValue = ref<Date[]>([
 ]);
 
 const daysBetween = (start: DateTime, end: DateTime): DateTime[] => {
-  console.log("start", start.toISODate());
-  console.log("end", end.toISODate());
-
   const dayNumber = moment(end.toJSDate()).diff(start.toJSDate(), "days") + 1;
   const dates = [];
 
@@ -73,8 +70,6 @@ const loadData = () => {
     const days = daysBetween(start, end);
 
     for (const datetime of days) {
-      console.log("datetime", days.length);
-
       const id = datetime.toFormat("DDD");
       const data = dataset.get(id);
 
