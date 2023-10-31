@@ -1,75 +1,140 @@
 <script setup lang="ts">
+import VueDatePicker from "@vuepic/vue-datepicker";
+import { DateTime } from "luxon";
 import moment from "moment";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import WorkingTimesAPI from "../api/workingTimes.api";
 import LineGraph, { LineGraphData } from "../components/graph/LineGraph.vue";
-import WorkingTime from "../types/WorkingTimes";
 
 const props = defineProps<{
   state: string;
 }>();
 
+const dateValue = ref<Date[]>([
+  moment().subtract(3, "days").toDate(),
+  moment().toDate(),
+]);
+
+const daysBetween = (start: DateTime, end: DateTime): DateTime[] => {
+  console.log("start", start.toISODate());
+  console.log("end", end.toISODate());
+
+  const dayNumber = moment(end.toJSDate()).diff(start.toJSDate(), "days") + 1;
+  const dates = [];
+
+  for (let i = 0; i < dayNumber; i++)
+    dates.push(
+      DateTime.fromJSDate(moment(start.toJSDate()).add(i, "d").toDate())
+    );
+
+  return dates;
+};
+
+const labels = ref<string[]>([]);
+const hours = ref<number[]>([]);
+
 const workingTimesData = ref<LineGraphData>({
-  labels: [
-    moment().subtract(3, "d").format("DD/MM"),
-    moment().subtract(2, "d").format("DD/MM"),
-    moment().subtract(1, "d").format("DD/MM"),
-    moment().format("DD/MM"),
-  ],
+  labels: ["1", "2", "3", "4"],
   data: {
     label: "secondes",
     values: [0, 0, 0, 0],
   },
 });
 
-const summarizeWorkingTime = (times: WorkingTime[]) => {
-  let sum = 0;
-
-  for (const time of times) {
-    sum += Math.abs(moment(time.start).diff(moment(time.end), "s"));
-  }
-
-  return sum;
-};
-
 const loadData = () => {
   WorkingTimesAPI.getWorkingTimesWithParams(
-    moment().subtract(3, "days").toDate(),
-    moment().toDate()
-  )
-    .then((res) => {
-      const daysRaw = res.data;
-      const timesPerDays = [
-        daysRaw.filter((d) => moment(d.start).isSame(moment(), "day")),
-        daysRaw.filter((d) =>
-          moment(d.start).isSame(moment().subtract(1, "day"), "day")
-        ),
-        daysRaw.filter((d) =>
-          moment(d.start).isSame(moment().subtract(2, "day"), "day")
-        ),
-        daysRaw.filter((d) =>
-          moment(d.start).isSame(moment().subtract(3, "day"), "day")
-        ),
-      ];
-      return timesPerDays;
-    })
-    .then((times) => [
-      summarizeWorkingTime(times[3]),
-      summarizeWorkingTime(times[2]),
-      summarizeWorkingTime(times[1]),
-      summarizeWorkingTime(times[0]),
-    ])
-    .then((times) => {
-      workingTimesData.value = {
-        ...workingTimesData.value,
-        data: { values: times, label: workingTimesData.value.data.label },
-      };
+    moment(dateValue.value[0]).toDate(),
+    moment(dateValue.value[1]).toDate()
+  ).then((res) => {
+    const dataset = new Map<string, number>();
+
+    labels.value = [];
+    hours.value = [];
+
+    if (res.data.length === 0) return;
+
+    res.data.forEach((schedule) => {
+      const start = DateTime.fromISO(schedule.start as any);
+      const end = DateTime.fromISO(schedule.end as any);
+      const id = start.toFormat("DDD");
+
+      const diff = end.diff(start, "seconds").get("seconds");
+      const prevDuration = dataset.get(id);
+
+      if (prevDuration) {
+        dataset.set(id, prevDuration + diff);
+      } else {
+        dataset.set(id, diff);
+      }
     });
+
+    const start = DateTime.fromJSDate(dateValue.value[0]);
+    const end = DateTime.fromJSDate(dateValue.value[1]);
+    const days = daysBetween(start, end);
+
+    for (const datetime of days) {
+      console.log("datetime", days.length);
+
+      const id = datetime.toFormat("DDD");
+      const data = dataset.get(id);
+
+      labels.value.push(id);
+      hours.value.push(data || 0);
+    }
+  });
 };
 
 onMounted(() => loadData());
+
+watch(dateValue.value, () => {
+  loadData();
+});
+
+watch(labels, () => {
+  workingTimesData.value = { ...workingTimesData.value, labels: labels.value };
+});
+watch(hours, () => {
+  workingTimesData.value = {
+    ...workingTimesData.value,
+    data: { ...workingTimesData.value.data, values: hours.value },
+  };
+});
 </script>
 
 <template>
-  <LineGraph v-if="props.state === 'first'" :data="workingTimesData" />
+  <div class="w-full flex items-center justify-center flex-col">
+    <div>
+      <VueDatePicker v-model="dateValue[0]">
+        <template #action-row="{ internalModelValue, selectDate }">
+          <div class="action-row flex flex-col justify-center w-full">
+            <p class="current-selection text-center">
+              {{ moment(internalModelValue).format("DD-MM-YYYY HH:mm") }}
+            </p>
+            <button
+              @click="selectDate"
+              class="select-button bg-[#3b3fb8] p-3 rounded-[30px] text-white text-md shadow-lg"
+            >
+              Valider
+            </button>
+          </div>
+        </template>
+      </VueDatePicker>
+      <VueDatePicker v-model="dateValue[1]">
+        <template #action-row="{ internalModelValue, selectDate }">
+          <div class="action-row flex flex-col justify-center w-full">
+            <p class="current-selection text-center">
+              {{ moment(internalModelValue).format("DD-MM-YYYY HH:mm") }}
+            </p>
+            <button
+              @click="selectDate"
+              class="select-button bg-[#3b3fb8] p-3 rounded-[30px] text-white text-md shadow-lg"
+            >
+              Valider
+            </button>
+          </div>
+        </template>
+      </VueDatePicker>
+    </div>
+    <LineGraph v-if="props.state === 'first'" :data="workingTimesData" />
+  </div>
 </template>
