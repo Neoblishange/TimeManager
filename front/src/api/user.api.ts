@@ -30,6 +30,16 @@ class UserAPI {
       ),
     }));
 
+  public static getAllEmployeeWithoutTeam = async (): Promise<
+    Response<User[]>
+  > =>
+    this.getAllUsers().then((res) => ({
+      ...res,
+      data: res.data.filter(
+        (user) => user.team === undefined || user.team === null
+      ),
+    }));
+
   public static getUserWithParams = async (
     email: string,
     username: string

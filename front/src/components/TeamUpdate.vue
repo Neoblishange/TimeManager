@@ -2,6 +2,7 @@
 import { onMounted, ref, watch } from "vue";
 import TeamsAPI from "../api/teams.api";
 import UserAPI from "../api/user.api";
+import UserProvider from "../store/User";
 import User from "../types/User";
 
 const emits = defineEmits<{
@@ -12,6 +13,7 @@ const props = defineProps<{
   id: string;
 }>();
 
+const user = new UserProvider();
 const modalOpen = ref(false);
 const formData = ref({ name: "", id: "" });
 const employeeID = ref<string>("");
@@ -38,6 +40,10 @@ const loadData = () => {
 
 onMounted(() => {
   loadData();
+});
+
+watch(modalOpen, () => {
+  if (modalOpen.value === true) loadData();
 });
 
 watch(employeeID, () => {
@@ -133,8 +139,11 @@ const removeUserFromTeam = (userID: string) =>
               <div v-if="teamUsers.length === 0">
                 Il n'y a pas d'utilisateurs dans cette équipe
               </div>
-              <div v-for="user in teamUsers" class="flex flex-row">
-                <button @click="removeUserFromTeam(user.id)">
+              <div v-for="_user in teamUsers" class="flex flex-row">
+                <button
+                  @click="removeUserFromTeam(_user.id)"
+                  v-if="_user.id !== user.getID()"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     class="icon icon-tabler icon-tabler-trash"
@@ -157,7 +166,7 @@ const removeUserFromTeam = (userID: string) =>
                     <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path>
                   </svg>
                 </button>
-                {{ user.username }}
+                {{ _user.username }}
               </div>
             </div>
             <div class="w-full">
