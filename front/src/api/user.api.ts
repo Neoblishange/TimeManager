@@ -56,10 +56,11 @@ class UserAPI {
     });
 
   public static updateUser = async (
+    id: string,
     email: string,
     username: string
   ): Promise<Response<User>> =>
-    Fetcher.put<User>("users", { user: { email, username } });
+    Fetcher.put<User>(`users/${id}`, { user: { email, username } });
 
   public static deleteUser = async (id: string): Promise<Response<User>> =>
     Fetcher.delete<User>(`users/${id}`);
