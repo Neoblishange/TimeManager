@@ -8,7 +8,7 @@ class TeamsAPI {
     Fetcher.get<Team[]>("teams");
 
   public static getTeamWithID = async (id: string): Promise<Response<Team>> =>
-    Fetcher.get<Team>("teams/" + id);
+    Fetcher.get<Team>(`teams/${id}`);
 
   public static createTeam = async (
     name: string,
@@ -25,6 +25,10 @@ class TeamsAPI {
     idUser: string,
     idTeam: string
   ): Promise<Response<Team>> => Fetcher.post(`teams/${idUser}/${idTeam}`);
+
+  public static removeUserToTeam = async (
+    idUser: string
+  ): Promise<Response<Team>> => Fetcher.post(`teams/${idUser}/remove`);
 
   public static changeTeamName = async (
     name: string,
