@@ -18,6 +18,7 @@ const employeeWithoutTeam = ref<User[]>([]);
 const createTeam = () => {
   TeamsAPI.createTeam(teamName.value, user.getID()).then(() => {
     user.reload();
+    loadData();
   });
 };
 
