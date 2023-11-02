@@ -4,12 +4,13 @@ import UserAPI from "../api/user.api";
 import HeaderVue from "../components/HeaderVue.vue";
 import router from "../router";
 import UserProvider from "../store/User";
+import EUserRole from "../types/EUserRole";
 
 const formStep = ref(0);
 const MAX_STEP = ref(2);
 const showPassword = ref(false);
 const showConfirmation = ref(false);
-const formData = ref({ email: "", username: "" });
+const formData = ref({ email: "", username: "", roles : [EUserRole.EMPLOYEE] });
 const user = new UserProvider();
 
 const prevStep = () => {
@@ -27,10 +28,22 @@ const register = () => {
       user.setUsername(res.data.username);
       user.setID(res.data.id);
       user.setToken("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
-      user.setRoles(res.data.roles)
+      user.setRoles(res.data.roles);
     })
     .then(() => router.push("/user"));
 };
+
+const setEmployee =()=>{
+  formData.value.roles = [EUserRole.EMPLOYEE]
+}
+
+const setManager = ()=> {
+  formData.value.roles = [EUserRole.EMPLOYEE, EUserRole.MANAGER]
+}
+const setDirector = ()=> {
+  formData.value.roles = [EUserRole.EMPLOYEE, EUserRole.MANAGER, EUserRole.DIRECTOR]
+}
+
 </script>
 
 <template>
@@ -68,6 +81,7 @@ const register = () => {
               <div class="flex items-center ml-5">
                 <input
                   checked
+                  @change="setEmployee"
                   id="employee"
                   type="radio"
                   value=""
@@ -78,6 +92,8 @@ const register = () => {
               </div>
               <div class="flex items-center ml-5">
                 <input
+                @change="setManager"
+
                   id="manager"
                   type="radio"
                   value=""
@@ -88,6 +104,7 @@ const register = () => {
               </div>
               <div class="flex items-center ml-5">
                 <input
+                @change="setDirector"
                   id="director"
                   type="radio"
                   value=""
