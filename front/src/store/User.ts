@@ -85,6 +85,10 @@ class UserProvider {
   public isEmployee = (): boolean =>
     UserProvider.user.roles.includes(EUserRole.EMPLOYEE);
 
+  public isOnlyEmployee = (): boolean =>
+    UserProvider.user.roles[0] === EUserRole.EMPLOYEE &&
+    UserProvider.user.roles.length === 1;
+
   public isManager = (): boolean =>
     UserProvider.user.roles.includes(EUserRole.MANAGER);
 

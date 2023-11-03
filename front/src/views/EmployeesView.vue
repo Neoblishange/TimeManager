@@ -4,6 +4,7 @@ import TeamsAPI from "../api/teams.api";
 import UserAPI from "../api/user.api";
 import HeaderVue from "../components/HeaderVue.vue";
 import TeamUpdate from "../components/TeamUpdate.vue";
+import TeamUserGraph from "../components/TeamUserGraph.vue";
 import UserProvider from "../store/User";
 import EUserRole from "../types/EUserRole";
 import Team from "../types/Team";
@@ -27,7 +28,11 @@ onMounted(() => {
 });
 
 watch(team, () => {
-  loadData();
+  if (team.value?.id) {
+    TeamsAPI.teamUsers(team.value?.id ?? "").then(
+      (res) => (teamUser.value = res.data)
+    );
+  }
 });
 
 const loadData = () => {
@@ -129,7 +134,8 @@ const tableHeaders = ["Username", "Email", "Rôle"];
                       </div>
                       <div v-else class="flex flex-row">Employée</div>
                     </td>
-                    <td>
+                    <td class="flex flex-row">
+                      <TeamUserGraph :user="_user" />
                       <button
                         @click="deleteUserFromTeam(_user.id)"
                         v-if="_user.id !== user.getID()"

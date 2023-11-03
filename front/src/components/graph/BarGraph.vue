@@ -1,42 +1,28 @@
 <script setup lang="ts">
-export interface LineGraphData {
-  labels: string[];
-  data: {
-    label: string;
-    values: number[];
-  };
-}
-
 import {
+BarElement,
 CategoryScale,
 Chart as ChartJS,
-Filler,
 Legend,
-LineElement,
 LinearScale,
-PointElement,
-RadialLinearScale,
 Title,
 Tooltip,
 } from "chart.js";
 import { computed } from "vue";
-
-import { Line } from "vue-chartjs";
+import { Bar } from "vue-chartjs";
+import { LineGraphData } from "./LineGraph.vue";
 
 const props = defineProps<{
   data: LineGraphData;
 }>();
 
 ChartJS.register(
-  RadialLinearScale,
-  Filler,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  BarElement,
+  CategoryScale,
+  LinearScale
 );
 
 const chartDataFirst = computed(() => ({
@@ -50,18 +36,6 @@ const chartDataFirst = computed(() => ({
     },
   ],
 }));
-
- const formatTime = (secondes: number): string => {
-  const hours = Math.floor(secondes / 3600);
-  const minutes = Math.floor((secondes % 3600) / 60);
-  const secs = secondes % 60;
-
-  const hoursStr = hours.toString().padStart(2, "0");
-  const minutesStr = minutes.toString().padStart(2, "0");
-  const secsStr = secs.toString().padStart(2, "0");
-
-  return `${hoursStr}:${minutesStr}:${secsStr}`;
-};
 
 const chartOptions = computed(() => {
   return {
@@ -83,8 +57,20 @@ const chartOptions = computed(() => {
     },
   };
 });
+
+const formatTime = (secondes: number): string => {
+  const hours = Math.floor(secondes / 3600);
+  const minutes = Math.floor((secondes % 3600) / 60);
+  const secs = secondes % 60;
+
+  const hoursStr = hours.toString().padStart(2, "0");
+  const minutesStr = minutes.toString().padStart(2, "0");
+  const secsStr = secs.toString().padStart(2, "0");
+
+  return `${hoursStr}:${minutesStr}:${secsStr}`;
+};
 </script>
 
 <template>
-  <Line id="first" :options="chartOptions" :data="chartDataFirst" />
+  <Bar :data="chartDataFirst" :options="chartOptions" />
 </template>

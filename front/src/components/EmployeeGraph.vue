@@ -5,15 +5,22 @@ import moment from "moment";
 import { onMounted, ref, watch } from "vue";
 import WorkingTimesAPI from "../api/workingTimes.api";
 import LineGraph, { LineGraphData } from "../components/graph/LineGraph.vue";
+import BarGraph from "./graph/BarGraph.vue";
 
 const props = defineProps<{
   state: string;
+  idUser?: string;
 }>();
 
 const dateValue = ref<Date[]>([
   moment().subtract(3, "days").toDate(),
   moment().toDate(),
 ]);
+const displayMode = ref<string>("line");
+
+const updateDisplayMode = () => {
+  displayMode.value = displayMode.value === "line" ? "bar" : "line";
+};
 
 const daysBetween = (start: DateTime, end: DateTime): DateTime[] => {
   const dayNumber = moment(end.toJSDate()).diff(start.toJSDate(), "days") + 1;
@@ -41,7 +48,8 @@ const workingTimesData = ref<LineGraphData>({
 const loadData = () => {
   WorkingTimesAPI.getWorkingTimesWithParams(
     moment(dateValue.value[0]).toDate(),
-    moment(dateValue.value[1]).toDate()
+    moment(dateValue.value[1]).toDate(),
+    props.idUser
   ).then((res) => {
     const dataset = new Map<string, number>();
 
@@ -88,6 +96,7 @@ watch(dateValue.value, () => {
 watch(labels, () => {
   workingTimesData.value = { ...workingTimesData.value, labels: labels.value };
 });
+
 watch(hours, () => {
   workingTimesData.value = {
     ...workingTimesData.value,
@@ -130,6 +139,24 @@ watch(hours, () => {
         </template>
       </VueDatePicker>
     </div>
-    <LineGraph v-if="props.state === 'first'" :data="workingTimesData" />
+    <div class="w-full" v-if="props.state === 'first'">
+      <div class="flex flex-row items-center justify-center m-5">
+        <span class="mr-3 text-sm font-medium text-gray-900">En ligne</span>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            value=""
+            class="sr-only peer"
+            @change="updateDisplayMode"
+          />
+          <div
+            class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#FCB795]"
+          ></div>
+        </label>
+        <span class="ml-3 text-sm font-medium text-gray-900">En Bar</span>
+      </div>
+      <LineGraph v-if="displayMode === 'line'" :data="workingTimesData" />
+      <BarGraph v-if="displayMode === 'bar'" :data="workingTimesData" />
+    </div>
   </div>
 </template>
