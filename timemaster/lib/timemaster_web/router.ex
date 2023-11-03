@@ -3,9 +3,16 @@ defmodule TimemasterWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug Timemaster.JwtAuthPlug
+  end
+
+  pipeline :no_auth do
+    plug :accepts, ["json"]
   end
 
   scope "/api", TimemasterWeb do
+    pipe_through :no_auth
+      post "/login", UserController, :login
     pipe_through :api
       get "/users", UserController, :get_user_by_params
       get "/users/all", UserController, :index

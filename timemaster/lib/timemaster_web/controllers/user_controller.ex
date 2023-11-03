@@ -4,8 +4,27 @@ defmodule TimemasterWeb.UserController do
   alias Timemaster.Accounts
   alias Timemaster.Accounts.User
   alias Timemaster.Repo
+  import Joken
 
   action_fallback TimemasterWeb.FallbackController
+
+  def login(conn, %{"email" => email, "password" => password}) do
+    case Repo.get_by(User, email: email, username: password) do
+      nil ->
+        conn
+        |> put_status(:unauthorized)
+        |> json(%{"error" => "Invalid email or password"})
+
+      user ->
+        {:ok, token, _claims} = Timemaster.Token.generate_and_sign()
+        extra_claims = %{"username" => user.username, "email" => user.email, "roles" => user.roles}
+        token_with_custom_claims = Timemaster.Token.generate_and_sign!(extra_claims)
+
+        conn
+        |> put_status(:ok)
+        |> json(%{"token" => token_with_custom_claims})
+    end
+  end
 
   def get_user_by_params(conn, %{"email" => email, "username" => username}) do
     case Repo.get_by(User, email: email, username: username) do
@@ -20,6 +39,10 @@ defmodule TimemasterWeb.UserController do
   end
 
   def index(conn, _params) do
+    #bearer_token = case Enum.at(conn.req_headers, 2) do
+    #  {"authorization", value} -> String.split(value, " ") |> Enum.at(1)
+    #  _ -> nil
+    #end
     users = Accounts.list_users()
     users = Repo.preload(users, :team)
     render(conn, :index, users: users)
