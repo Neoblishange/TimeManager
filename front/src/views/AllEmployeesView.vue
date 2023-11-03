@@ -130,7 +130,6 @@ const tableHeaders = ["Username", "Email", "Équipe", "Rôle"];
                   </div>
                 </td>
                 <td class="text-center py-2 px-2 hover:bg-red-400">
-                  <TeamUpdate @on-create="loadData()" :id="_user.id" />
                   <button
                     @click="deleteUser(_user.id)"
                     v-if="_user.id !== user.getID()"

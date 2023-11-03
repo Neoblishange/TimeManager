@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import UserAPI from "../api/user.api";
 import HeaderVue from "../components/HeaderVue.vue";
 import router from "../router";
@@ -19,7 +19,27 @@ const deleteAccount = () =>
   });
 
 const saveAccount = () =>
-  UserAPI.updateUser(userData.value.email, userData.value.username);
+  UserAPI.updateUser(
+    user.getID(),
+    userData.value.email,
+    userData.value.username
+  ).then((res) => {
+    user.setEmail(res.data.email);
+    user.setUsername(res.data.username);
+  });
+
+const loadData = () => {
+  UserAPI.getUserWithID(user.getID()).then((res) => {
+    userData.value = {
+      email: res.data.email,
+      username: res.data.username,
+    };
+  });
+};
+
+onMounted(() => {
+  loadData();
+});
 </script>
 
 <template>

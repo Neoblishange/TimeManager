@@ -22,13 +22,14 @@ class WorkingTimesAPI {
 
   public static getWorkingTimesWithParams = async (
     start: Date,
-    end: Date
+    end: Date,
+    userID?: string
   ): Promise<Response<WorkingTime[]>> => {
     const user = new UserProvider();
 
     return Fetcher.get<WorkingTime[]>(
       "workingtimes/" +
-        user.getID() +
+        (userID ?? user.getID()) +
         "?start=" +
         moment(start).format("YYYY-MM-DD HH:mm:ss") +
         "&end=" +
