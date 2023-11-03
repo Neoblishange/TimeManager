@@ -137,7 +137,7 @@ class Fetcher {
     const user = new UserProvider();
 
     if (isAuth) {
-      finalHeaders = { Authorization: `${user.getToken()}`, ...headers };
+      finalHeaders = { Authorization: `Bearer ${user.getToken()}`, ...headers };
     }
     return finalHeaders;
   }
