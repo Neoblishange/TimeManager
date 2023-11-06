@@ -35,5 +35,7 @@ defmodule TimemasterWeb.Router do
       post "/teams/:userID/:id", TeamController, :add_user
       put "/teams/:id", TeamController, :update
       resources "/teams", TeamController, except: [:update, :new, :edit]
+
+      resources "/roles", RolesController, except: [:update, :edit, :delete]
   end
 end

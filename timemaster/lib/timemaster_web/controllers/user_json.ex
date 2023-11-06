@@ -28,7 +28,7 @@ defmodule TimemasterWeb.UserJSON do
       username: user.username,
       email: user.email,
       team: user.team,
-      roles: user.roles
+      roles: user.user_roles
     }
   end
 end
