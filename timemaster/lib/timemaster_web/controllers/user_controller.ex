@@ -9,20 +9,24 @@ defmodule TimemasterWeb.UserController do
   action_fallback TimemasterWeb.FallbackController
 
   def login(conn, %{"email" => email, "password" => password}) do
-    case Repo.get_by(User, email: email, username: password) do
+    case Repo.get_by(User, email: email) do
       nil ->
         conn
         |> put_status(:unauthorized)
         |> json(%{"error" => "Invalid email or password"})
-
       user ->
-        {:ok, token, _claims} = Timemaster.Token.generate_and_sign()
-        extra_claims = %{"username" => user.username, "email" => user.email, "roles" => user.roles}
-        token_with_custom_claims = Timemaster.Token.generate_and_sign!(extra_claims)
-
-        conn
-        |> put_status(:ok)
-        |> json(%{"token" => token_with_custom_claims})
+        if Bcrypt.verify_pass(password, user.password) do
+          {:ok, token, _claims} = Timemaster.Token.generate_and_sign()
+          extra_claims = %{"id" => user.id, "username" => user.username, "email" => user.email, "roles" => user.roles}
+          token_with_custom_claims = Timemaster.Token.generate_and_sign!(extra_claims)
+          conn
+          |> put_status(:ok)
+          |> json(%{"token" => token_with_custom_claims})
+        else
+          conn
+          |> put_status(:unauthorized)
+          |> json(%{"error" => "Invalid email or password"})
+        end
     end
   end
 
@@ -49,6 +53,9 @@ defmodule TimemasterWeb.UserController do
   end
 
   def create(conn, %{"user" => user_params}) do
+    password = Map.get(user_params, "password")
+    hashed_password = Bcrypt.hash_pwd_salt(password)
+    user_params = Map.put(user_params, "password", hashed_password)
     with {:ok, %User{} = user} <- Accounts.create_user(user_params) do
       user = Repo.preload(user, :team)
       conn

@@ -8,6 +8,7 @@ defmodule Timemaster.Accounts.User do
   schema "users" do
     field :email, :string
     field :username, :string
+    field :password, :string
     field :roles, {:array, :string}, default: ["employee"]#employee/manager/director
     belongs_to :team, Timemaster.Organisation.Team
 
@@ -17,8 +18,8 @@ defmodule Timemaster.Accounts.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:username, :email, :roles, :team_id])
-    |> validate_required([:username, :email])
+    |> cast(attrs, [:username, :email, :password, :roles, :team_id])
+    |> validate_required([:username, :email, :password])
     |> unique_constraint(:email)
   end
 end

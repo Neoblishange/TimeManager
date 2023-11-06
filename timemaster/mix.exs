@@ -46,6 +46,7 @@ defmodule Timemaster.MixProject do
       {:joken, "~> 2.5"},
       {:plug, "~> 1.12"},
       {:poison, "~> 3.1"},
+      {:bcrypt_elixir, "~> 2.2"},
     ]
   end
 
