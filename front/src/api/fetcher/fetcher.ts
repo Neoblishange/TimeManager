@@ -17,7 +17,7 @@ class Fetcher {
   ): Promise<Response<T>> {
     // Build request
     const finalUri = this.buildURL(uri, params);
-    const finalHeaders = await this.getFinalHeaders(headers, isAuth);
+    const finalHeaders = this.getFinalHeaders(headers, isAuth);
 
     try {
       // Make request
@@ -41,7 +41,7 @@ class Fetcher {
   ): Promise<Response<T>> {
     // Build request"
     const finalUri = this.buildURL(uri, {});
-    const finalHeaders = await this.getFinalHeaders(headers, isAuth);
+    const finalHeaders = this.getFinalHeaders(headers, isAuth);
     try {
       // Make request
       const axiosResponse = await axios.post(finalUri, params, {
@@ -64,7 +64,7 @@ class Fetcher {
   ): Promise<Response<T>> {
     // Build request
     const finalUri = this.buildURL(uri, {});
-    const finalHeaders = await this.getFinalHeaders(headers, isAuth);
+    const finalHeaders = this.getFinalHeaders(headers, isAuth);
 
     try {
       // Make request
@@ -88,7 +88,7 @@ class Fetcher {
   ): Promise<Response<T>> {
     // Build request
     const finalUri = this.buildURL(uri, {});
-    const finalHeaders = await this.getFinalHeaders(headers, isAuth);
+    const finalHeaders = this.getFinalHeaders(headers, isAuth);
 
     try {
       // Make request
@@ -112,7 +112,7 @@ class Fetcher {
   ): Promise<Response<T>> {
     // Build request
     const finalUri = this.buildURL(uri, params);
-    const finalHeaders = await this.getFinalHeaders(headers, isAuth);
+    const finalHeaders = this.getFinalHeaders(headers, isAuth);
 
     try {
       // Make request
@@ -128,10 +128,7 @@ class Fetcher {
     }
   }
 
-  private static async getFinalHeaders(
-    headers: object,
-    isAuth: boolean
-  ): Promise<object> {
+  private static getFinalHeaders(headers: object, isAuth: boolean): object {
     let finalHeaders = { ...headers };
 
     const user = new UserProvider();
@@ -146,7 +143,7 @@ class Fetcher {
     return this.URL + pathname + this.buildURLParamsFromObject(search);
   }
 
-  private static isRequestSucces = (code: number): boolean => {
+  private static isRequestSuccess = (code: number): boolean => {
     return code >= 200 && code < 300;
   };
 
@@ -154,19 +151,21 @@ class Fetcher {
     axiosResponse: AxiosResponse<any, any>,
     noMessage = false
   ): Response<T> {
+    const data = axiosResponse.data.data ?? axiosResponse.data;
+
     if (noMessage) {
       return {
-        ok: this.isRequestSucces(axiosResponse.status),
+        ok: this.isRequestSuccess(axiosResponse.status),
         code: axiosResponse.status,
-        data: axiosResponse.data.data,
+        data,
       };
     }
 
     return {
-      ok: this.isRequestSucces(axiosResponse.status),
+      ok: this.isRequestSuccess(axiosResponse.status),
       message: axiosResponse.statusText,
       code: axiosResponse.status,
-      data: axiosResponse.data.data,
+      data,
     };
   }
 

@@ -34,6 +34,12 @@ class UserProvider {
       return UserProvider.user.team;
     }
   };
+
+  public setTeam = (team: Team | undefined) => {
+    UserProvider.user.team = team;
+    UserProvider.save();
+  };
+
   public getEmail = (): string => {
     if (UserProvider.user.email) return UserProvider.user.email;
     else {

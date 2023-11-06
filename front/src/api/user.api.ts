@@ -1,5 +1,6 @@
+import { jwtDecode } from "jwt-decode";
 import EUserRole from "../types/EUserRole";
-import User from "../types/User";
+import User, { UserLogin } from "../types/User";
 import Fetcher from "./fetcher/fetcher";
 import Response from "./fetcher/response";
 
@@ -55,6 +56,27 @@ class UserAPI {
       user: { email, username, roles },
     });
 
+  public static login = async ({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }): Promise<Response<UserLogin>> =>
+    Fetcher.post<UserLogin>("login", {
+      email,
+      password,
+    }).then((res) => {
+      const { email, id, roles, username } = jwtDecode(
+        res.data.token
+      ) satisfies { [key: string]: any };
+
+      return {
+        ...res,
+        data: { token: res.data.token, email, id, roles, username },
+      };
+    });
+
   public static updateUser = async (
     id: string,
     email: string,
@@ -77,20 +99,6 @@ class UserAPI {
         roles: ["employee"],
       },
     });
-
-  public static login = ({
-    email,
-    username,
-  }: {
-    email: string;
-    username: string;
-  }) => {
-    return {
-      email,
-      username,
-      authToken: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-    };
-  };
 }
 
 export default UserAPI;
