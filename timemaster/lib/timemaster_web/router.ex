@@ -13,6 +13,7 @@ defmodule TimemasterWeb.Router do
   scope "/api", TimemasterWeb do
     pipe_through :no_auth
       post "/login", UserController, :login
+      post "/users", UserController, :create
     pipe_through :api
       get "/users", UserController, :get_user_by_params
       get "/users/all", UserController, :index
