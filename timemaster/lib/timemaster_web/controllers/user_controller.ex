@@ -17,7 +17,8 @@ defmodule TimemasterWeb.UserController do
       user ->
         if Bcrypt.verify_pass(password, user.password) do
           {:ok, token, _claims} = Timemaster.Token.generate_and_sign()
-          extra_claims = %{"id" => user.id, "username" => user.username, "email" => user.email, "roles" => user.roles}
+          user = Repo.preload(user, :user_roles)
+          extra_claims = %{"id" => user.id, "username" => user.username, "email" => user.email, "roles" => user.user_roles}
           token_with_custom_claims = Timemaster.Token.generate_and_sign!(extra_claims)
           conn
           |> put_status(:ok)
@@ -37,7 +38,7 @@ defmodule TimemasterWeb.UserController do
         |> put_status(:not_found)
         |> json(%{message: "User not found"})
       user ->
-        user = Repo.preload(user, :team)
+        user = Repo.preload(user, [:team, :user_roles])
         render(conn, :get_user_by_params, user: user)
     end
   end
@@ -48,7 +49,7 @@ defmodule TimemasterWeb.UserController do
     #  _ -> nil
     #end
     users = Accounts.list_users()
-    users = Repo.preload(users, :team)
+    users = Repo.preload(users, [:team, :user_roles])
     render(conn, :index, users: users)
   end
 
@@ -57,7 +58,7 @@ defmodule TimemasterWeb.UserController do
     hashed_password = Bcrypt.hash_pwd_salt(password)
     user_params = Map.put(user_params, "password", hashed_password)
     with {:ok, %User{} = user} <- Accounts.create_user(user_params) do
-      user = Repo.preload(user, :team)
+      user = Repo.preload(user, [:team, :user_roles])
       conn
       |> put_status(:created)
       |> put_resp_header("location", ~p"/api/users/#{user}")
@@ -72,7 +73,7 @@ defmodule TimemasterWeb.UserController do
         |> put_status(:not_found)
         |> json(%{message: "User not found"})
       user ->
-        user = Repo.preload(user, :team)
+        user = Repo.preload(user, [:team, :user_roles])
         render(conn, :show, user: user)
     end
   end
@@ -85,7 +86,26 @@ defmodule TimemasterWeb.UserController do
         |> json(%{message: "User not found"})
       user ->
         with {:ok, %User{} = user} <- Accounts.update_user(user, user_params) do
-          user = Repo.preload(user, :team)
+          roles = Map.get(user_params, "roles")
+          user = Repo.preload(user, [:team, :user_roles])
+          old_user_roles = Repo.get_by(Timemaster.Accounts.UserRoles, user_id: user.id)
+          if(old_user_roles) do
+            Accounts.delete_user_roles(old_user_roles)
+          end
+          for role_id <- roles do
+            role = Repo.get(Timemaster.Accounts.Roles, role_id)
+            case role do
+              nil ->
+                conn
+                |> put_status(:bad_request)
+                |> json(%{message: "This role does not exist"})
+              _ ->
+                user_roles = %{user_id: user.id, role_id: role.id}
+                {:ok, _} = Accounts.create_user_roles(user_roles)
+            end
+          end
+          user = Repo.get(User, user.id)
+          user = Repo.preload(user, [:team, :user_roles])
           render(conn, :show, user: user)
         end
     end
