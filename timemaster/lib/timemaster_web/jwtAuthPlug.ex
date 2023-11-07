@@ -25,7 +25,7 @@ defmodule Timemaster.JwtAuthPlug do
     |> assign(:jwt, token_payload.token)
   end
 
-  defp jwt_from_authorization(conn) do
+  def jwt_from_authorization(conn) do
     [bearer_token] = for {"authorization", token} <- conn.req_headers do
       String.split(token, " ") |> Enum.at(1)
     end
