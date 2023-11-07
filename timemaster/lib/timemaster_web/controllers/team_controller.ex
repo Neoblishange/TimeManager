@@ -42,7 +42,7 @@ defmodule TimemasterWeb.TeamController do
                   team ->
                     users = Repo.all(from(u in Timemaster.Accounts.User, where: u.team_id == ^team.id))
                     workingtimes = Enum.flat_map(users, fn user ->
-                      Repo.all(from(w in Timemaster.Work.Workingtime, where: w.user_id == ^user.id))
+                      Repo.all(from(w in Timemaster.Work.Workingtime, where: w.user_id == ^user.id and w.start >= ^startTime and w.end <= ^endTime))
                     end)
                     times =
                       workingtimes
