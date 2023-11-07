@@ -3,6 +3,7 @@ import { onMounted, ref } from "vue";
 import UserAPI from "../api/user.api";
 import EmployeeAdd from "../components/EmployeeAdd.vue";
 import HeaderVue from "../components/HeaderVue.vue";
+import TeamUserGraph from "../components/TeamUserGraph.vue";
 import UserProvider from "../store/User";
 import EUserRole from "../types/EUserRole";
 import User from "../types/User";
@@ -130,6 +131,8 @@ const tableHeaders = ["Username", "Email", "Équipe", "Rôle"];
                   </div>
                 </td>
                 <td class="text-center py-2 px-2 hover:bg-red-400">
+                  
+                  <TeamUserGraph :user="_user" />
                   <button
                     @click="deleteUser(_user.id)"
                     v-if="_user.id !== user.getID()"

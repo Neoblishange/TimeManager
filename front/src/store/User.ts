@@ -34,6 +34,12 @@ class UserProvider {
       return UserProvider.user.team;
     }
   };
+
+  public setTeam = (team: Team | undefined) => {
+    UserProvider.user.team = team;
+    UserProvider.save();
+  };
+
   public getEmail = (): string => {
     if (UserProvider.user.email) return UserProvider.user.email;
     else {
@@ -141,10 +147,13 @@ class UserProvider {
   };
 
   public reload = async () => {
-    UserProvider.user = {
-      ...(await UserAPI.getUserWithID(UserProvider.user.id)).data,
-      authToken: UserProvider.user.authToken,
-    };
+    await UserAPI.getUserWithID(UserProvider.user.id).then((res) => {
+      UserProvider.user = {
+        ...res.data,
+        authToken: UserProvider.user.authToken,
+      };
+      UserProvider.save();
+    });
   };
 
   private static save = () => {

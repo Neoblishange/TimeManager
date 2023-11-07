@@ -1,3 +1,16 @@
+<script setup lang="ts">
+import router from "../router";
+import UserProvider from "../store/User";
+
+const user = new UserProvider();
+const isAuth = user.isAuth();
+
+const disconnect = () => {
+  user.disconnect();
+  router.push("/");
+};
+</script>
+
 <template>
   <div
     class="fixed top-0 w-full bg-[#fcb795] h-[100px] p-5 border-b-2 border-gray-200 flex items-center justify-between z-[2000]"
@@ -77,16 +90,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import router from "../router";
-import UserProvider from "../store/User";
-
-const user = new UserProvider();
-const isAuth = user.isAuth();
-
-const disconnect = () => {
-  user.disconnect();
-  router.push("/");
-};
-</script>

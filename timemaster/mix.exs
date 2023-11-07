@@ -19,7 +19,7 @@ defmodule Timemaster.MixProject do
   def application do
     [
       mod: {Timemaster.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :plug]
     ]
   end
 
@@ -42,7 +42,11 @@ defmodule Timemaster.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
       {:plug_cowboy, "~> 2.5"},
-      {:cors_plug, "~> 3.0"}
+      {:cors_plug, "~> 3.0"},
+      {:joken, "~> 2.5"},
+      {:plug, "~> 1.12"},
+      {:poison, "~> 3.1"},
+      {:bcrypt_elixir, "~> 2.2"},
     ]
   end
 

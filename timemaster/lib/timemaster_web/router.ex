@@ -3,9 +3,17 @@ defmodule TimemasterWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug Timemaster.JwtAuthPlug
+  end
+
+  pipeline :no_auth do
+    plug :accepts, ["json"]
   end
 
   scope "/api", TimemasterWeb do
+    pipe_through :no_auth
+      post "/login", UserController, :login
+      post "/users", UserController, :create
     pipe_through :api
       get "/users", UserController, :get_user_by_params
       get "/users/all", UserController, :index
@@ -27,5 +35,7 @@ defmodule TimemasterWeb.Router do
       post "/teams/:userID/:id", TeamController, :add_user
       put "/teams/:id", TeamController, :update
       resources "/teams", TeamController, except: [:update, :new, :edit]
+
+      resources "/roles", RolesController, except: [:update, :edit, :delete]
   end
 end

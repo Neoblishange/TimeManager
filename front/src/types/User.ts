@@ -11,3 +11,11 @@ type User = {
 };
 
 export default User;
+
+export interface UserLogin {
+  email: string;
+  id: string;
+  roles: EUserRole[];
+  username: string;
+  token: string;
+}
