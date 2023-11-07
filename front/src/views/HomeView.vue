@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import UserAPI from "../api/user.api";
 import HeaderVue from "../components/HeaderVue.vue";
+import router from "../router";
 import UserProvider from "../store/User.ts";
 
 const user = new UserProvider();
@@ -13,13 +14,10 @@ const userData = ref({
 const showPassword = ref(false);
 
 const login = () => {
-  UserAPI.login({ ...userData.value }).then((res) => {
+  UserAPI.login({ ...userData.value }).then(async (res) => {
     user.setToken(res.data.token);
     user.setID(res.data.id);
-    user.reload().then(() => {
-      console.log("alors ?", user);
-
-    })
+    user.reload().then(() => router.push("/user"));
   });
 };
 </script>
