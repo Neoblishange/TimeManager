@@ -2,6 +2,7 @@ defmodule Timemaster.Work.Workingtime do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {Jason.Encoder, only: [:start, :end]}
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "workingtimes" do
@@ -16,6 +17,6 @@ defmodule Timemaster.Work.Workingtime do
   def changeset(workingtime, attrs) do
     workingtime
     |> cast(attrs, [:start, :end, :user_id])
-    |> validate_required([:start, :end, :user_id])
+    |> validate_required([:user_id])
   end
 end

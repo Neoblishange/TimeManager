@@ -4,12 +4,20 @@ import UserAPI from "../api/user.api";
 import HeaderVue from "../components/HeaderVue.vue";
 import router from "../router";
 import UserProvider from "../store/User";
+import EUserRole from "../types/EUserRole";
 
 const formStep = ref(0);
 const MAX_STEP = ref(2);
 const showPassword = ref(false);
+const error = ref("");
 const showConfirmation = ref(false);
-const formData = ref({ email: "", username: "" });
+const formData = ref({
+  email: "",
+  username: "",
+  roles: [EUserRole.EMPLOYEE],
+  password: "",
+  confirmation: "",
+});
 const user = new UserProvider();
 
 const prevStep = () => {
@@ -21,15 +29,34 @@ const nextStep = () => {
 };
 
 const register = () => {
-  UserAPI.createUser(formData.value.email, formData.value.username)
-    .then((res) => {
-      user.setEmail(res.data.email);
-      user.setUsername(res.data.username);
-      user.setID(res.data.id);
-      user.setToken("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
-      user.setRoles(res.data.roles)
-    })
-    .then(() => router.push("/user"));
+  if (formData.value.password === formData.value.confirmation) {
+    UserAPI.createUser(formData.value.email, formData.value.username)
+      .then((res) => {
+        user.setEmail(res.data.email);
+        user.setUsername(res.data.username);
+        user.setID(res.data.id);
+        user.setToken("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+        user.setRoles(res.data.roles);
+      })
+      .then(() => router.push("/user"));
+  } else {
+    error.value = "Le mot de passe et la confirmation ne correspondent pas !";
+  }
+};
+
+const setEmployee = () => {
+  formData.value.roles = [EUserRole.EMPLOYEE];
+};
+
+const setManager = () => {
+  formData.value.roles = [EUserRole.EMPLOYEE, EUserRole.MANAGER];
+};
+const setDirector = () => {
+  formData.value.roles = [
+    EUserRole.EMPLOYEE,
+    EUserRole.MANAGER,
+    EUserRole.DIRECTOR,
+  ];
 };
 </script>
 
@@ -67,7 +94,8 @@ const register = () => {
               >
               <div class="flex items-center ml-5">
                 <input
-                  checked
+                  :checked="formData.roles.length === 1"
+                  @change="setEmployee"
                   id="employee"
                   type="radio"
                   value=""
@@ -78,6 +106,8 @@ const register = () => {
               </div>
               <div class="flex items-center ml-5">
                 <input
+                  :checked="formData.roles.length === 2"
+                  @change="setManager"
                   id="manager"
                   type="radio"
                   value=""
@@ -88,6 +118,8 @@ const register = () => {
               </div>
               <div class="flex items-center ml-5">
                 <input
+                  :checked="formData.roles.length === 3"
+                  @change="setDirector"
                   id="director"
                   type="radio"
                   value=""
@@ -124,6 +156,7 @@ const register = () => {
 
               <div class="relative">
                 <input
+                  v-model="formData.password"
                   :type="showPassword ? 'text' : 'password'"
                   id="password"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
@@ -184,6 +217,7 @@ const register = () => {
 
               <div class="relative">
                 <input
+                  v-model="formData.confirmation"
                   :type="showConfirmation ? 'text' : 'password'"
                   id="password"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
@@ -241,7 +275,7 @@ const register = () => {
           <div class="flex gap-2">
             <button
               v-if="formStep != 0"
-              class="bg-[#fcb795] p-3 rounded-[30px] border-black text-white text-md shadow-2xl min-w-[150px]"
+              class="bg-[#fcb795] p-3 rounded-[30px] border-black text-white text-md shadow-lg min-w-[150px]"
               @click="prevStep()"
               :disabled="formStep === 0"
             >
@@ -250,7 +284,7 @@ const register = () => {
 
             <button
               v-if="formStep < MAX_STEP - 1"
-              class="bg-[#fcb795] p-3 rounded-[30px] border-black text-white text-md shadow-2xl min-w-[150px]"
+              class="bg-[#fcb795] p-3 rounded-[30px] border-black text-white text-md shadow-lg min-w-[150px]"
               @click="nextStep()"
               :disabled="formStep >= MAX_STEP"
             >
@@ -260,7 +294,7 @@ const register = () => {
             <button
               v-if="formStep === MAX_STEP - 1"
               @click="register()"
-              class="bg-[#fcb795] p-3 rounded-[30px] border-black text-white text-md shadow-2xl min-w-[150px]"
+              class="bg-[#fcb795] p-3 rounded-[30px] border-black text-white text-md shadow-lg min-w-[150px]"
             >
               Connection
             </button>

@@ -9,14 +9,33 @@ class WorkingTimesAPI {
     Response<WorkingTime[]>
   > => {
     const user = new UserProvider();
-    const start = moment().subtract(10, "years").utc().format("YYYY-MM-DD");
-    const end = moment().add(10, "years").utc().format("YYYY-MM-DD");
+    const start = moment()
+      .subtract(10, "years")
+      .utc()
+      .format("YYYY-MM-DD HH:mm:ss");
+    const end = moment().add(10, "years").utc().format("YYYY-MM-DD HH:mm:ss");
 
     return Fetcher.get<WorkingTime[]>(
       "workingtimes/" + user.getID() + "?start=" + start + "&end=" + end
     );
   };
 
+  public static getWorkingTimesWithParams = async (
+    start: Date,
+    end: Date,
+    userID?: string
+  ): Promise<Response<WorkingTime[]>> => {
+    const user = new UserProvider();
+
+    return Fetcher.get<WorkingTime[]>(
+      "workingtimes/" +
+        (userID ?? user.getID()) +
+        "?start=" +
+        moment(start).format("YYYY-MM-DD HH:mm:ss") +
+        "&end=" +
+        moment(end).format("YYYY-MM-DD HH:mm:ss")
+    );
+  };
   public static getOne = (
     workingTimeID: string
   ): Promise<Response<WorkingTime>> => {

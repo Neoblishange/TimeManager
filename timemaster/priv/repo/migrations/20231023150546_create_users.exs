@@ -6,7 +6,8 @@ defmodule Timemaster.Repo.Migrations.CreateUsers do
       add :id, :binary_id, primary_key: true
       add :username, :string
       add :email, :string
-      add :roles, {:array, :string}, default: ["employee"]
+      add :password, :string
+
       timestamps(type: :utc_datetime)
     end
     create unique_index(:users, [:email])

@@ -1,16 +1,50 @@
 <script setup lang="ts">
+import VueDatePicker from "@vuepic/vue-datepicker";
 import moment from "moment";
 import { onMounted, ref } from "vue";
-import VueTailwindDatepicker from "vue-tailwind-datepicker";
+import ClockAPI from "../api/clock.apis";
 import WorkingTimesAPI from "../api/workingTimes.api";
 import HeaderVue from "../components/HeaderVue.vue";
 import WorkingTimesUpdate from "../components/WorkingTimeUpdate.vue";
+import Clock from "../types/Clock";
 import WorkingTime from "../types/WorkingTimes";
 
-const dateValue = ref([]);
+const dateValue = ref<Date[]>([new Date(), new Date()]);
 const workingTimes = ref<WorkingTime[]>([]);
+
 const modalUpdate = ref(false);
 const timeUpdate = ref<WorkingTime>();
+
+const currentTime = ref<{ clock: Clock | undefined; time: number }>({
+  clock: undefined,
+  time: 0,
+});
+
+const clockOn = () => {
+  ClockAPI.setClockingOn().then(() => {
+    updateClock();
+    loadData();
+  });
+};
+
+const clockOff = () => {
+  ClockAPI.setClockingOff().then(() => {
+    updateClock();
+    loadData();
+  });
+};
+
+const updateClock = () => {
+  ClockAPI.getCurrentClock().then((res) => {
+    if (res.data.status === true) {
+      currentTime.value.clock = res.data;
+      currentTime.value.time = moment().diff(moment(res.data.time), "s");
+    } else {
+      currentTime.value.time = 0;
+      currentTime.value.clock = undefined;
+    }
+  });
+};
 
 const deleteTime = (time: WorkingTime) => {
   WorkingTimesAPI.delete(time).then(() => {
@@ -32,6 +66,7 @@ const loadData = () => {
   WorkingTimesAPI.getWorkingTimes().then(
     (res) => (workingTimes.value = res.data)
   );
+  updateClock();
 };
 
 const addWorkingTimes = () => {
@@ -50,19 +85,85 @@ const onUpdate = () => {
 onMounted(() => {
   loadData();
 });
+
+const formatTime = (secondes: number): string => {
+  const hours = Math.floor(secondes / 3600);
+  const minutes = Math.floor((secondes % 3600) / 60);
+  const secs = secondes % 60;
+
+  const hoursStr = hours.toString().padStart(2, "0");
+  const minutesStr = minutes.toString().padStart(2, "0");
+  const secsStr = secs.toString().padStart(2, "0");
+
+  return `${hoursStr}:${minutesStr}:${secsStr}`;
+};
 </script>
 
 <template>
   <HeaderVue />
   <div class="mt-[150px] flex justify-center items-center flex-col gap-6">
+    <div>Travail en cours</div>
+
+    <div
+      v-if="currentTime.clock !== undefined"
+      class="flex flex-col justify-center items-center gap-3"
+    >
+      {{ formatTime(currentTime.time) }}
+      <button
+        @click="updateClock()"
+        class="bg-[#3b3fb8] p-3 rounded-[30px] text-white text-md shadow-lg px-10"
+      >
+        Rafraîchir le temps
+      </button>
+      <button
+        @click="clockOff()"
+        class="bg-white p-3 rounded-[30px] border-[#3b3fb8] text-[#3b3fb8] text-md shadow-lg"
+      >
+        Arrêter cette session
+      </button>
+    </div>
+    <button
+      v-else
+      @click="clockOn()"
+      class="bg-[#3b3fb8] p-3 rounded-[30px] text-white text-md shadow-lg px-10"
+    >
+      Commencer un temps de travail
+    </button>
+
     <div>Ajouter une plage horaire</div>
     <div class="w-full flex flex-row gap-2 max-w-[300px]">
-      <vue-tailwind-datepicker
-        v-model="dateValue"
-        as-single
-        use-range
-        :shortcuts="false"
-      />
+      <div>
+        <VueDatePicker v-model="dateValue[0]">
+          <template #action-row="{ internalModelValue, selectDate }">
+            <div class="action-row flex flex-col justify-center w-full">
+              <p class="current-selection text-center">
+                {{ moment(internalModelValue).format("DD-MM-YYYY HH:mm") }}
+              </p>
+              <button
+                @click="selectDate"
+                class="select-button bg-[#3b3fb8] p-3 rounded-[30px] text-white text-md shadow-lg"
+              >
+                Valider
+              </button>
+            </div>
+          </template>
+        </VueDatePicker>
+        <VueDatePicker v-model="dateValue[1]">
+          <template #action-row="{ internalModelValue, selectDate }">
+            <div class="action-row flex flex-col justify-center w-full">
+              <p class="current-selection text-center">
+                {{ moment(internalModelValue).format("DD-MM-YYYY HH:mm") }}
+              </p>
+              <button
+                @click="selectDate"
+                class="select-button bg-[#3b3fb8] p-3 rounded-[30px] text-white text-md shadow-lg"
+              >
+                Valider
+              </button>
+            </div>
+          </template>
+        </VueDatePicker>
+      </div>
       <button @click="addWorkingTimes()">
         <svg
           xmlns="http://www.w3.org/2000/svg"

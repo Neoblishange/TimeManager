@@ -61,3 +61,6 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
+
+# Config JWT token
+config :joken, default_signer: "iI6M5ODc2ODM4MywiYzYzRhOTliM2ViMCIsImGYW1lI4Y2EwZmM0ZS03NThlyJtYyIUgvpZ9j5HdEdEmzmGqPTwSNRbM1"
