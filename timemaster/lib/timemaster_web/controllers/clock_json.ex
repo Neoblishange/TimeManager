@@ -1,5 +1,6 @@
 defmodule TimemasterWeb.ClockJSON do
   alias Timemaster.Time.Clock
+  alias Timemaster.Repo
 
   @doc """
   Renders a list of clocks.
@@ -20,7 +21,7 @@ defmodule TimemasterWeb.ClockJSON do
       id: clock.id,
       time: clock.time,
       status: clock.status,
-      user: clock.user
+      user: Repo.preload(clock.user, :user_roles)
     }
   end
 end
