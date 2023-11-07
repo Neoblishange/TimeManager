@@ -59,9 +59,13 @@ defmodule TimemasterWeb.UserController do
     user_params = Map.put(user_params, "password", hashed_password)
     with {:ok, %User{} = user} <- Accounts.create_user(user_params) do
       user = Repo.preload(user, [:team, :user_roles])
+      employee_role = Repo.get_by(Timemaster.Accounts.Roles, name: "employee")
+      user_roles = %{user_id: user.id, role_id: employee_role.id}
+      {:ok, _} = Accounts.create_user_roles(user_roles)
+      user = Repo.get(User, user.id)
+      user = Repo.preload(user, [:team, :user_roles])
       conn
       |> put_status(:created)
-      |> put_resp_header("location", ~p"/api/users/#{user}")
       |> render(:show, user: user)
     end
   end
