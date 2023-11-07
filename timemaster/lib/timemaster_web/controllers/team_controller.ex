@@ -19,6 +19,7 @@ defmodule TimemasterWeb.TeamController do
             |> json(%{message: "Team not found"})
           team ->
             users = Repo.all(from(u in Timemaster.Accounts.User, where: u.team_id == ^team.id))
+            users = Repo.preload(users, :user_roles)
             conn
             |> put_status(:ok)
             |> json(%{data: users})
@@ -86,6 +87,7 @@ defmodule TimemasterWeb.TeamController do
               "team_id" => nil,
             }
             with {:ok, updated_user} <- Timemaster.Accounts.update_user(user, updated_user_params) do
+              updated_user = Repo.preload(updated_user, :user_roles)
               conn
               |> put_status(:ok)
               |> json(%{data: %{user: updated_user, team: nil}})
@@ -101,6 +103,7 @@ defmodule TimemasterWeb.TeamController do
                   "team_id" => team.id,
                 }
                 with {:ok, updated_user} <- Timemaster.Accounts.update_user(user, updated_user_params) do
+                  updated_user = Repo.preload(updated_user, :user_roles)
                   conn
                   |> put_status(:ok)
                   |> json(%{data: %{user: updated_user, team: team}})
@@ -130,7 +133,10 @@ defmodule TimemasterWeb.TeamController do
             |> put_status(:not_found)
             |> json(%{message: "User not found"})
           user ->
-            if "manager" in user.roles do
+            user = Repo.preload(user, :user_roles)
+            manager_role = Repo.get_by(Timemaster.Accounts.Roles, name: "manager")
+            has_manager_role = Repo.get_by(Timemaster.Accounts.UserRoles, user_id: user.id, role_id: manager_role.id)
+            if has_manager_role do
               with {:ok, %Team{} = team} <- Organisation.create_team(team_params) do
                 team = Repo.preload(team, :manager)
                 params = %{

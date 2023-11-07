@@ -50,10 +50,11 @@ class UserAPI {
   public static createUser = async (
     email: string,
     username: string,
-    roles: EUserRole[] = [EUserRole.EMPLOYEE]
+    roles: EUserRole[] = [EUserRole.EMPLOYEE],
+    password: string
   ): Promise<Response<User>> =>
     Fetcher.post<User>("users", {
-      user: { email, username, roles },
+      user: { email, username, roles, password },
     });
 
   public static login = async ({

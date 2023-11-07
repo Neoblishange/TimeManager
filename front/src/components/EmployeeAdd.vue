@@ -13,7 +13,13 @@ const formStep = ref(0);
 const MAX_STEP = ref(2);
 const showPassword = ref(false);
 const showConfirmation = ref(false);
-const formData = ref({ email: "", username: "", roles: [] as EUserRole[] });
+const formData = ref({
+  email: "",
+  username: "",
+  roles: [] as EUserRole[],
+  password: "",
+  confirmation: "",
+});
 
 const prevStep = () => {
   if (formStep.value > 0) formStep.value--;
@@ -27,7 +33,8 @@ const register = () => {
   UserAPI.createUser(
     formData.value.email,
     formData.value.username,
-    formData.value.roles
+    formData.value.roles,
+    formData.value.password
   ).then(() => {
     loadData();
     emits("onCreate");

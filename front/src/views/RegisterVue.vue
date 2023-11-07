@@ -30,33 +30,24 @@ const nextStep = () => {
 
 const register = () => {
   if (formData.value.password === formData.value.confirmation) {
-    UserAPI.createUser(formData.value.email, formData.value.username)
-      .then((res) => {
-        user.setEmail(res.data.email);
-        user.setUsername(res.data.username);
+    UserAPI.createUser(
+      formData.value.email,
+      formData.value.username,
+      formData.value.roles,
+      formData.value.password
+    ).then(() => {
+      UserAPI.login({
+        password: formData.value.password,
+        email: formData.value.email,
+      }).then(async (res) => {
+        user.setToken(res.data.token);
         user.setID(res.data.id);
-        user.setToken("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
-        user.setRoles(res.data.roles);
-      })
-      .then(() => router.push("/user"));
+        user.reload().then(() => router.push("/user"));
+      });
+    });
   } else {
     error.value = "Le mot de passe et la confirmation ne correspondent pas !";
   }
-};
-
-const setEmployee = () => {
-  formData.value.roles = [EUserRole.EMPLOYEE];
-};
-
-const setManager = () => {
-  formData.value.roles = [EUserRole.EMPLOYEE, EUserRole.MANAGER];
-};
-const setDirector = () => {
-  formData.value.roles = [
-    EUserRole.EMPLOYEE,
-    EUserRole.MANAGER,
-    EUserRole.DIRECTOR,
-  ];
 };
 </script>
 
@@ -88,55 +79,6 @@ const setDirector = () => {
                 required
               />
             </div>
-            <div class="w-full flex flex-col">
-              <label for="type"
-                >Type de compte <span class="text-red-600">*</span></label
-              >
-              <div class="flex items-center ml-5">
-                <input
-                  :checked="formData.roles.length === 1"
-                  @change="setEmployee"
-                  id="employee"
-                  type="radio"
-                  value=""
-                  name="default-radio"
-                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
-                />
-                <label for="employee" class="ml-2 text-gray-900">Employé</label>
-              </div>
-              <div class="flex items-center ml-5">
-                <input
-                  :checked="formData.roles.length === 2"
-                  @change="setManager"
-                  id="manager"
-                  type="radio"
-                  value=""
-                  name="default-radio"
-                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
-                />
-                <label for="manager" class="ml-2 text-gray-900">Manager</label>
-              </div>
-              <div class="flex items-center ml-5">
-                <input
-                  :checked="formData.roles.length === 3"
-                  @change="setDirector"
-                  id="director"
-                  type="radio"
-                  value=""
-                  name="default-radio"
-                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
-                />
-                <label for="director" class="ml-2 text-gray-900"
-                  >Directeur</label
-                >
-              </div>
-            </div>
-          </div>
-          <div
-            v-else-if="formStep === 1"
-            class="w-full flex flex-col items-center"
-          >
-            <span class="underline">Informations confidentielles :</span>
             <div class="w-full">
               <label for="email" class="block mb-2 text-sm text-dark"
                 >Email <span class="text-red-600">*</span></label
@@ -149,6 +91,14 @@ const setDirector = () => {
                 required
               />
             </div>
+          </div>
+
+          <div
+            v-else-if="formStep === 1"
+            class="w-full flex flex-col items-center"
+          >
+            <span class="underline">Informations confidentielles :</span>
+
             <div class="w-full">
               <label for="password" class="block mb-2 text-sm text-dark"
                 >Mot de passe <span class="text-red-600">*</span></label
