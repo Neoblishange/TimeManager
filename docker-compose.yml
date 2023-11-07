@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+  phoenix:
+    build:
+      context: ./timemaster
+      dockerfile: Dockerfile
+    volumes:
+      - ./timemaster:/app
+      - /app/deps
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+    environment:
+      MIX_ENV: dev
+
+  db:
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: timemaster_dev
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  
+  front:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      - phoenix
+
+
+volumes:
+  pgdata:
