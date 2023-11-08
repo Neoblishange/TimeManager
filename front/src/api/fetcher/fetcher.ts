@@ -4,10 +4,7 @@ import Response from "./response";
 const envVars = import.meta.env;
 
 class Fetcher {
-  private static URL =
-    (envVars.VITE_ENV === "DEV"
-      ? envVars.VITE_URL_DEV
-      : envVars.VITE_URL_PROD) + envVars.VITE_BASE_URI;
+  private static URL = "http://63.250.57.169:4000/api/";
 
   public static async get<T>(
     uri: string,
