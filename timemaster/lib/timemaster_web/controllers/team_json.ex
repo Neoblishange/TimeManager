@@ -1,5 +1,6 @@
 defmodule TimemasterWeb.TeamJSON do
   alias Timemaster.Organisation.Team
+  alias Timemaster.Repo
 
   @doc """
   Renders a list of teams.
@@ -19,7 +20,7 @@ defmodule TimemasterWeb.TeamJSON do
     %{
       id: team.id,
       name: team.name,
-      manager: team.manager
+      manager: Repo.preload(team.manager, :user_roles)
     }
   end
 end

@@ -1,5 +1,6 @@
 defmodule TimemasterWeb.WorkingTimeJSON do
   alias Timemaster.Work.Workingtime
+  alias Timemaster.Repo
 
   def get_workingtimes_by_params(%{workingtimes: workingtimes}) do
     %{data: for(workingtime <- workingtimes, do: data(workingtime))}
@@ -24,7 +25,7 @@ defmodule TimemasterWeb.WorkingTimeJSON do
       id: workingtime.id,
       start: workingtime.start,
       end: workingtime.end,
-      user: workingtime.user
+      user: Repo.preload(workingtime.user, :user_roles)
     }
   end
 end
