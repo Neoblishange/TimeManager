@@ -10,7 +10,7 @@ defmodule TimemasterWeb.TeamController do
   action_fallback TimemasterWeb.FallbackController
 
   def get_users(conn, params) do
-    case Map.fetch(params, "id") do
+    case Map.fetch(params, "teamID") do
       {:ok, id} ->
         case Repo.get(Team, id) do
           nil ->
@@ -32,7 +32,7 @@ defmodule TimemasterWeb.TeamController do
       {:ok, startTime} ->
         case Map.fetch(params, "end") do
           {:ok, endTime} ->
-            case Map.fetch(params, "id") do
+            case Map.fetch(params, "teamID") do
               {:ok, id} ->
                 case Repo.get(Team, id) do
                   nil ->
@@ -74,7 +74,7 @@ defmodule TimemasterWeb.TeamController do
     end
   end
 
-  def add_user(conn, %{"userID" => userID, "id" => id}) do
+  def add_user(conn, %{"userID" => userID, "teamID" => id}) do
     case Repo.get(Timemaster.Accounts.User, userID) do
       nil ->
         conn
@@ -158,7 +158,7 @@ defmodule TimemasterWeb.TeamController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
+  def show(conn, %{"teamID" => id}) do
     case Repo.get(Team, id) do
       nil ->
         conn
@@ -171,7 +171,7 @@ defmodule TimemasterWeb.TeamController do
     end
   end
 
-  def update(conn, %{"id" => id, "team" => team_params}) do
+  def update(conn, %{"teamID" => id, "team" => team_params}) do
     case Repo.get(Team, id) do
       nil ->
         conn
@@ -186,7 +186,7 @@ defmodule TimemasterWeb.TeamController do
     end
   end
 
-  def delete(conn, %{"id" => id}) do
+  def delete(conn, %{"teamID" => id}) do
     case Repo.get(Team, id) do
       nil ->
         conn

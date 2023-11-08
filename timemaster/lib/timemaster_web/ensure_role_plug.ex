@@ -15,7 +15,7 @@ defmodule Timemaster.EnsureRolePlug do
         case user_roles do
           [nil] ->
             conn
-            |> forbidden
+            |> not_enough_privileges
           _ ->
             has_matching_role = Enum.any?(roles, fn role_name ->
               Enum.any?(user_roles, fn user_role ->
@@ -23,22 +23,37 @@ defmodule Timemaster.EnsureRolePlug do
               end)
             end)
             if has_matching_role do
-              conn
+              if !Map.get(conn.path_params, "teamID")
+                 && Map.get(conn.path_params, "userID")
+                 && Map.get(conn.assigns.claims, "id") != Map.get(conn.path_params, "userID") do
+                conn
+                |> forbidden
+                else
+                conn
+              end
             else
               conn
-              |> forbidden
+              |> not_enough_privileges
             end
 
         end
 
       _ ->
         conn
-        |> forbidden
+        |> not_enough_privileges
     end
   end
 
-  defp forbidden(conn) do
+  defp not_enough_privileges(conn) do
     response = %{"message" => "Unauthorized: You have not enough privileges"}
+    conn
+    |> put_resp_content_type("application/json")
+    |> Plug.Conn.send_resp(401, Poison.encode!(response))
+    |> Plug.Conn.halt()
+  end
+
+  defp forbidden(conn) do
+    response = %{"message" => "Unauthorized: It's not your account"}
     conn
     |> put_resp_content_type("application/json")
     |> Plug.Conn.send_resp(401, Poison.encode!(response))
