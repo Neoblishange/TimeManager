@@ -1,12 +1,16 @@
-import { CapacitorConfig } from '@capacitor/cli';
+import { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: 'com.frontv2',
-  appName: 'frontv2',
-  webDir: 'dist',
+  appId: "com.frontv2",
+  appName: "frontv2",
+  webDir: "dist",
   server: {
-    androidScheme: 'https'
-  }
+    androidScheme: "http",
+    cleartext: true,
+  },
+  android: {
+    allowMixedContent: true,
+  },
 };
 
 export default config;

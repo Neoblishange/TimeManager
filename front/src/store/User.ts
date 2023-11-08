@@ -5,6 +5,7 @@ import User from "../types/User";
 
 class UserProvider {
   private static user: User;
+  private static isOnline: boolean = true;
 
   constructor() {
     if (UserProvider.user !== undefined) {
@@ -13,6 +14,18 @@ class UserProvider {
       UserProvider.loadUser();
     }
   }
+
+  public isOnline = (): boolean => {
+    return UserProvider.isOnline === true;
+  };
+
+  public isOffline = (): boolean => {
+    return UserProvider.isOnline === false;
+  };
+
+  public setOnlineStatus = (status: boolean) => {
+    UserProvider.isOnline = status;
+  };
 
   public getUsername = (): string => {
     if (UserProvider.user.username) return UserProvider.user.username;
