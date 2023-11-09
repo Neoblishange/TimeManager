@@ -1,5 +1,12 @@
-import axios, { AxiosError, AxiosResponse, HttpStatusCode } from "axios";
+import axios, {
+  AxiosError,
+  AxiosRequestConfig,
+  AxiosResponse,
+  HttpStatusCode,
+} from "axios";
+import { useToast } from "vue-toastification";
 import UserProvider from "../../store/User";
+import OffLineRequests from "./offLineRequests";
 import Response from "./response";
 const envVars = import.meta.env;
 
@@ -9,6 +16,23 @@ class Fetcher {
       ? envVars.VITE_URL_DEV
       : envVars.VITE_URL_PROD) + envVars.VITE_BASE_URI;
 
+  public static async makeRequest<T>(options: AxiosRequestConfig) {
+    const user = new UserProvider();
+
+    if (user.isOffline()) {
+      OffLineRequests.add(options);
+    }
+    try {
+      const response = await axios(options);
+      return Fetcher.formatResponse<T>(response, true);
+    } catch (error) {
+      useToast().error(
+        options.method + " request to " + options.url + " failed." + error
+      );
+      return this.handleError<T>(error as AxiosError);
+    }
+  }
+
   public static async get<T>(
     uri: string,
     params: object = {},
@@ -16,21 +40,13 @@ class Fetcher {
     isAuth = true
   ): Promise<Response<T>> {
     // Build request
-    const finalUri = this.buildURL(uri, params);
-    const finalHeaders = this.getFinalHeaders(headers, isAuth);
+    const options: AxiosRequestConfig = {
+      url: this.buildURL(uri, params),
+      method: "get",
+      headers: this.getFinalHeaders(headers, isAuth),
+    };
 
-    try {
-      // Make request
-      const axiosResponse = await axios.get(finalUri, {
-        headers: finalHeaders,
-      });
-
-      // Return custom response
-      return this.formatResponse(axiosResponse, true);
-    } catch (error) {
-      // Handle custom error response
-      return this.handleError<T>(error as AxiosError);
-    }
+    return this.makeRequest<T>(options);
   }
 
   public static async post<T>(
@@ -39,21 +55,15 @@ class Fetcher {
     headers: object = {},
     isAuth = true
   ): Promise<Response<T>> {
-    // Build request"
-    const finalUri = this.buildURL(uri, {});
-    const finalHeaders = this.getFinalHeaders(headers, isAuth);
-    try {
-      // Make request
-      const axiosResponse = await axios.post(finalUri, params, {
-        headers: finalHeaders,
-      });
+    // Build request
+    const options: AxiosRequestConfig = {
+      url: this.buildURL(uri, {}),
+      method: "post",
+      headers: this.getFinalHeaders(headers, isAuth),
+      data: params,
+    };
 
-      // Return custom response
-      return this.formatResponse(axiosResponse);
-    } catch (error) {
-      // Handle custom error response
-      return this.handleError<T>(error as AxiosError);
-    }
+    return this.makeRequest<T>(options);
   }
 
   public static async patch<T>(
@@ -63,21 +73,14 @@ class Fetcher {
     isAuth = true
   ): Promise<Response<T>> {
     // Build request
-    const finalUri = this.buildURL(uri, {});
-    const finalHeaders = this.getFinalHeaders(headers, isAuth);
+    const options: AxiosRequestConfig = {
+      url: this.buildURL(uri, {}),
+      method: "patch",
+      headers: this.getFinalHeaders(headers, isAuth),
+      data: params,
+    };
 
-    try {
-      // Make request
-      const axiosResponse = await axios.patch(finalUri, params, {
-        headers: finalHeaders,
-      });
-
-      // Return custom response
-      return this.formatResponse(axiosResponse);
-    } catch (error) {
-      // Handle custom error response
-      return this.handleError<T>(error as AxiosError);
-    }
+    return this.makeRequest<T>(options);
   }
 
   public static async put<T>(
@@ -87,21 +90,14 @@ class Fetcher {
     isAuth = true
   ): Promise<Response<T>> {
     // Build request
-    const finalUri = this.buildURL(uri, {});
-    const finalHeaders = this.getFinalHeaders(headers, isAuth);
+    const options: AxiosRequestConfig = {
+      url: this.buildURL(uri, {}),
+      method: "put",
+      headers: this.getFinalHeaders(headers, isAuth),
+      data: params,
+    };
 
-    try {
-      // Make request
-      const axiosResponse = await axios.put(finalUri, params, {
-        headers: finalHeaders,
-      });
-
-      // Return custom response
-      return this.formatResponse(axiosResponse);
-    } catch (error) {
-      // Handle custom error response
-      return this.handleError<T>(error as AxiosError);
-    }
+    return this.makeRequest<T>(options);
   }
 
   public static async delete<T>(
@@ -111,21 +107,13 @@ class Fetcher {
     isAuth = true
   ): Promise<Response<T>> {
     // Build request
-    const finalUri = this.buildURL(uri, params);
-    const finalHeaders = this.getFinalHeaders(headers, isAuth);
+    const options: AxiosRequestConfig = {
+      url: this.buildURL(uri, params),
+      method: "delete",
+      headers: this.getFinalHeaders(headers, isAuth),
+    };
 
-    try {
-      // Make request
-      const axiosResponse = await axios.delete(finalUri, {
-        headers: finalHeaders,
-      });
-
-      // Return custom response
-      return this.formatResponse(axiosResponse);
-    } catch (error) {
-      // Handle custom error response
-      return this.handleError<T>(error as AxiosError);
-    }
+    return this.makeRequest<T>(options);
   }
 
   private static getFinalHeaders(headers: object, isAuth: boolean): object {
