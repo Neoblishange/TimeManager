@@ -6,11 +6,13 @@ import ClockAPI from "../api/clock.apis";
 import WorkingTimesAPI from "../api/workingTimes.api";
 import HeaderVue from "../components/HeaderVue.vue";
 import WorkingTimesUpdate from "../components/WorkingTimeUpdate.vue";
+import UserProvider from "../store/User";
 import Clock from "../types/Clock";
 import WorkingTime from "../types/WorkingTimes";
 
 const dateValue = ref<Date[]>([new Date(), new Date()]);
 const workingTimes = ref<WorkingTime[]>([]);
+const user = new UserProvider();
 
 const modalUpdate = ref(false);
 const timeUpdate = ref<WorkingTime>();
@@ -21,29 +23,55 @@ const currentTime = ref<{ clock: Clock | undefined; time: number }>({
 });
 
 const clockOn = () => {
-  ClockAPI.setClockingOn().then(() => {
-    updateClock();
-    loadData();
-  });
+  ClockAPI.setClockingOn()
+    .then(() => {
+      updateClock();
+      loadData();
+    })
+    .catch(() => {
+      if (user.isOffline())
+        currentTime.value = {
+          clock: {
+            id: "offline",
+            status: true,
+            time: moment().utc().toString(),
+            user: user.getUser(),
+          },
+          time: moment().diff(currentTime.value.clock?.time, "seconds"),
+        };
+    });
 };
 
 const clockOff = () => {
-  ClockAPI.setClockingOff().then(() => {
-    updateClock();
-    loadData();
-  });
+  ClockAPI.setClockingOff()
+    .then(() => {
+      updateClock();
+      loadData();
+    })
+    .catch(() => {
+      if (user.isOffline()) currentTime.value = { clock: undefined, time: 0 };
+    });
 };
 
 const updateClock = () => {
-  ClockAPI.getCurrentClock().then((res) => {
-    if (res.data.status === true) {
-      currentTime.value.clock = res.data;
-      currentTime.value.time = moment().diff(moment(res.data.time), "s");
-    } else {
-      currentTime.value.time = 0;
-      currentTime.value.clock = undefined;
+  if (user.isOffline()) {
+    if (currentTime.value.clock !== undefined) {
+      currentTime.value.time = moment().diff(
+        currentTime.value.clock?.time,
+        "seconds"
+      );
     }
-  });
+  } else {
+    ClockAPI.getCurrentClock().then((res) => {
+      if (res.data.status === true) {
+        currentTime.value.clock = res.data;
+        currentTime.value.time = moment().diff(moment(res.data.time), "s");
+      } else {
+        currentTime.value.time = 0;
+        currentTime.value.clock = undefined;
+      }
+    });
+  }
 };
 
 const deleteTime = (time: WorkingTime) => {
@@ -164,7 +192,7 @@ const formatTime = (secondes: number): string => {
           </template>
         </VueDatePicker>
       </div>
-      <button @click="addWorkingTimes()">
+      <button :disabled="user.isOffline()" @click="addWorkingTimes()">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="icon icon-tabler icon-tabler-plus"
@@ -247,7 +275,7 @@ const formatTime = (secondes: number): string => {
                 {{ moment(time.end).format("dddd DD MMMM YYYY - HH:mm:ss") }}
               </td>
               <td>
-                <button @click="showUpdate(time)">
+                <button :disabled="user.isOffline()" @click="showUpdate(time)">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     class="icon icon-tabler icon-tabler-edit"
@@ -270,7 +298,7 @@ const formatTime = (secondes: number): string => {
                     <path d="M16 5l3 3"></path>
                   </svg>
                 </button>
-                <button @click="deleteTime(time)">
+                <button :disabled="user.isOffline()" @click="deleteTime(time)">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     class="icon icon-tabler icon-tabler-trash"
@@ -307,6 +335,5 @@ const formatTime = (secondes: number): string => {
       @close="closeUpdate"
       :time="timeUpdate"
     />
-    <div></div>
   </div>
 </template>
