@@ -55,3 +55,4 @@ front/android/app/src/main/res/xml/file_paths.xml
 front/android/app/src/test/java/com/getcapacitor/myapp/ExampleUnitTest.java
 front/android/gradle/wrapper/gradle-wrapper.jar
 front/android/gradle/wrapper/gradle-wrapper.properties
+.vscode/settings.json
