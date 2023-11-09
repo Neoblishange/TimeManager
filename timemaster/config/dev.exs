@@ -3,7 +3,7 @@ import Config
 # Configure your database
 config :timemaster, Timemaster.Repo,
   username: "postgres",
-  password: "postgres",
+  password: "123456",
   hostname: "db",
   database: "timemaster_dev",
   stacktrace: true,

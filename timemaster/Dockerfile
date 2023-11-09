@@ -15,8 +15,5 @@ WORKDIR /app
 COPY mix.exs mix.lock ./
 RUN mix deps.get
 
-# Copiez tous les autres fichiers de votre application
-COPY . .
-
 # Commande pour démarrer votre application Phoenix
 CMD ["mix","phx.server"]
