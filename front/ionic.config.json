@@ -1,0 +1,7 @@
+{
+  "name": "frontv2",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "custom"
+}
