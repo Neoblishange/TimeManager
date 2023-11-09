@@ -26,4 +26,4 @@ jobs:
 
       - name: Restart Docker services on SSH server
         run: |
-          ssh -i ssh_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@63.250.57.169 "cd /home/omc/projet && docker-compose down -v && docker-compose up --build -d"
+          ssh -i ssh_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@63.250.57.169 "cd /home/omc/app/projet && docker-compose down -v && docker-compose up --build -d"
