@@ -23,29 +23,55 @@ const currentTime = ref<{ clock: Clock | undefined; time: number }>({
 });
 
 const clockOn = () => {
-  ClockAPI.setClockingOn().then(() => {
-    updateClock();
-    loadData();
-  });
+  ClockAPI.setClockingOn()
+    .then(() => {
+      updateClock();
+      loadData();
+    })
+    .catch(() => {
+      if (user.isOffline())
+        currentTime.value = {
+          clock: {
+            id: "offline",
+            status: true,
+            time: moment().utc().toString(),
+            user: user.getUser(),
+          },
+          time: moment().diff(currentTime.value.clock?.time, "seconds"),
+        };
+    });
 };
 
 const clockOff = () => {
-  ClockAPI.setClockingOff().then(() => {
-    updateClock();
-    loadData();
-  });
+  ClockAPI.setClockingOff()
+    .then(() => {
+      updateClock();
+      loadData();
+    })
+    .catch(() => {
+      if (user.isOffline()) currentTime.value = { clock: undefined, time: 0 };
+    });
 };
 
 const updateClock = () => {
-  ClockAPI.getCurrentClock().then((res) => {
-    if (res.data.status === true) {
-      currentTime.value.clock = res.data;
-      currentTime.value.time = moment().diff(moment(res.data.time), "s");
-    } else {
-      currentTime.value.time = 0;
-      currentTime.value.clock = undefined;
+  if (user.isOffline()) {
+    if (currentTime.value.clock !== undefined) {
+      currentTime.value.time = moment().diff(
+        currentTime.value.clock?.time,
+        "seconds"
+      );
     }
-  });
+  } else {
+    ClockAPI.getCurrentClock().then((res) => {
+      if (res.data.status === true) {
+        currentTime.value.clock = res.data;
+        currentTime.value.time = moment().diff(moment(res.data.time), "s");
+      } else {
+        currentTime.value.time = 0;
+        currentTime.value.clock = undefined;
+      }
+    });
+  }
 };
 
 const deleteTime = (time: WorkingTime) => {

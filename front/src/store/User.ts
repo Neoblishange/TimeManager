@@ -51,6 +51,10 @@ class UserProvider {
     this.checkIfOnline();
   };
 
+  public getUser = () => {
+    return { ...UserProvider.user };
+  };
+
   public getUsername = (): string => {
     if (UserProvider.user.username) return UserProvider.user.username;
     else {

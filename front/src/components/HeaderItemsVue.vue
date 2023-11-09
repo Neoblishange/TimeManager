@@ -65,7 +65,6 @@ const disconnect = () => {
     </router-link>
     <button
       @click="disconnect()"
-      :disabled="user.isOffline()"
       class="bg-[#3b3fb8] p-3 rounded-[30px] text-white text-md shadow-lg"
     >
       Déconnection

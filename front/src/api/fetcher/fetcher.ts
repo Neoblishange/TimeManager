@@ -16,11 +16,25 @@ class Fetcher {
       ? envVars.VITE_URL_DEV
       : envVars.VITE_URL_PROD) + envVars.VITE_BASE_URI;
 
-  public static async makeRequest<T>(options: AxiosRequestConfig) {
+  public static async makeRequest<T>(
+    options: AxiosRequestConfig
+  ): Promise<Response<T>> {
     const user = new UserProvider();
 
     if (user.isOffline()) {
       OffLineRequests.add(options);
+      return this.handleError<T>({
+        message: "No Network Connection",
+        isAxiosError: true,
+        name: "No Network Connection",
+        toJSON: () => {
+          return {
+            message: "No Network Connection",
+            isAxiosError: true,
+            name: "No Network Connection",
+          };
+        },
+      });
     }
     try {
       const response = await axios(options);
@@ -171,7 +185,7 @@ class Fetcher {
   }
 
   private static handleError<T>(error: AxiosError): Promise<Response<T>> {
-    const message = (error.response?.data as any).message;
+    const message = ((error.response?.data as any) ?? { message: "" }).message;
 
     if (error.response)
       return Promise.reject({

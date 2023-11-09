@@ -9,6 +9,7 @@ class OffLineRequests {
   }
 
   public static add(req: AxiosRequestConfig) {
+    OffLineRequests.load()
     OffLineRequests.requests.push(req);
     OffLineRequests.save();
   }
@@ -21,10 +22,20 @@ class OffLineRequests {
     this.requests = JSON.parse(localStorage.getItem("requests") ?? "[]");
   }
 
+  private static clear() {
+    this.requests = [];
+    this.save();
+  }
+
   public static push() {
+    const reqs = [];
     for (const request of this.requests) {
-      Fetcher.makeRequest(request);
+      reqs.push(Fetcher.makeRequest(request));
     }
+    Promise.all(reqs).then(() => {
+      this.clear();
+      window.location.reload();
+    });
   }
 }
 
