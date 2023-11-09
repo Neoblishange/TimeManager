@@ -1,4 +1,5 @@
 import UserAPI from "../api/user.api";
+import router from "../router";
 import EUserRole from "../types/EUserRole";
 import Team from "../types/Team";
 import User from "../types/User";
@@ -6,14 +7,35 @@ import User from "../types/User";
 class UserProvider {
   private static user: User;
   private static isOnline: boolean = true;
+  private static intervalID: any = undefined;
 
   constructor() {
+    this.checkIfOnline();
+    if (UserProvider.intervalID === undefined) {
+      UserProvider.intervalID = setInterval(() => {
+        this.checkIfOnline();
+      }, 2000);
+    }
     if (UserProvider.user !== undefined) {
       UserProvider.loadUserFromLS();
     } else {
       UserProvider.loadUser();
     }
   }
+
+  private checkIfOnline = () => {
+    UserProvider.isOnline = navigator.onLine;
+    let path = window.location.pathname;
+
+    if (UserProvider.isOnline === false) {
+      path = `/workingTimes/${UserProvider?.user?.id ?? ""}`;
+    }
+
+    router.push({
+      path: `/workingTimes/${UserProvider?.user?.id ?? ""}`,
+      force: true,
+    });
+  };
 
   public isOnline = (): boolean => {
     return UserProvider.isOnline === true;
@@ -25,6 +47,8 @@ class UserProvider {
 
   public setOnlineStatus = (status: boolean) => {
     UserProvider.isOnline = status;
+    this.checkIfOnline();
+
   };
 
   public getUsername = (): string => {
