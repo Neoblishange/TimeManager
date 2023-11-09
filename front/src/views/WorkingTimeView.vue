@@ -309,6 +309,5 @@ const formatTime = (secondes: number): string => {
       @close="closeUpdate"
       :time="timeUpdate"
     />
-    <div></div>
   </div>
 </template>

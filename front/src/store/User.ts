@@ -26,13 +26,14 @@ class UserProvider {
   private checkIfOnline = () => {
     UserProvider.isOnline = navigator.onLine;
     let path = window.location.pathname;
+    const id = UserProvider.user?.id;
 
     if (UserProvider.isOnline === false) {
-      path = `/workingTimes/${UserProvider?.user?.id ?? ""}`;
+      path = `/workingTimes/${id}`;
     }
 
     router.push({
-      path: `/workingTimes/${UserProvider?.user?.id ?? ""}`,
+      path,
       force: true,
     });
   };
@@ -48,7 +49,6 @@ class UserProvider {
   public setOnlineStatus = (status: boolean) => {
     UserProvider.isOnline = status;
     this.checkIfOnline();
-
   };
 
   public getUsername = (): string => {
