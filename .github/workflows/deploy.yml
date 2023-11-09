@@ -1,4 +1,4 @@
-name: Deploy to SSH Server
+name: Deploy to SSH Server CI
 
 on:
   push:
