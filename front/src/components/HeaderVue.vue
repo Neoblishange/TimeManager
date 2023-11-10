@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import UserProvider from "../store/User";
+import Role from "../types/Roles";
 import HeaderItemsVue from "./HeaderItemsVue.vue";
 
 const isBurgerOpen = ref(false);
 const user = new UserProvider();
+Role.load();
 </script>
 
 <template>

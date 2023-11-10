@@ -6,7 +6,7 @@ import HeaderVue from "../components/HeaderVue.vue";
 import TeamUpdate from "../components/TeamUpdate.vue";
 import TeamUserGraph from "../components/TeamUserGraph.vue";
 import UserProvider from "../store/User";
-import EUserRole from "../types/EUserRole";
+import Role from "../types/Roles.js";
 import Team from "../types/Team";
 import User from "../types/User";
 
@@ -123,11 +123,11 @@ const tableHeaders = ["Username", "Email", "Rôle"];
                       {{ _user.email }}
                     </td>
                     <td class="text-center py-2 px-10">
-                      <div v-if="_user.roles.includes(EUserRole.DIRECTOR)">
+                      <div v-if="_user.roles.includes(Role.DIRECTOR)">
                         Directeur
                       </div>
                       <div
-                        v-else-if="_user.roles.includes(EUserRole.MANAGER)"
+                        v-else-if="_user.roles.includes(Role.MANAGER)"
                         class="flex flex-row"
                       >
                         Manager

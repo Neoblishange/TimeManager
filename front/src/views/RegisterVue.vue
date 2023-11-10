@@ -4,7 +4,7 @@ import UserAPI from "../api/user.api";
 import HeaderVue from "../components/HeaderVue.vue";
 import router from "../router";
 import UserProvider from "../store/User";
-import EUserRole from "../types/EUserRole";
+import Role from "../types/Roles";
 
 const formStep = ref(0);
 const MAX_STEP = ref(2);
@@ -14,7 +14,7 @@ const showConfirmation = ref(false);
 const formData = ref({
   email: "",
   username: "",
-  roles: [EUserRole.EMPLOYEE],
+  roles: [Role.EMPLOYEE],
   password: "",
   confirmation: "",
 });
