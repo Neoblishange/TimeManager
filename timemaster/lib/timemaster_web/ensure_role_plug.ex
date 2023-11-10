@@ -23,7 +23,7 @@ defmodule Timemaster.EnsureRolePlug do
               end)
             end)
             has_director_role = Enum.any?(user_roles, fn user_role ->
-              user_role.name == "director"
+              user_role.name == Application.get_env(:timemaster, :director)
             end)
             if has_matching_role do
               if !Map.get(conn.path_params, "teamID")
