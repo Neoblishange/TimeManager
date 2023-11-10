@@ -1,8 +1,10 @@
+import { useToast } from "vue-toastification";
 import UserAPI from "../api/user.api";
 import router from "../router";
 import EUserRole from "../types/EUserRole";
 import Team from "../types/Team";
 import User from "../types/User";
+import OffLineRequests from "../api/fetcher/offLineRequests";
 
 class UserProvider {
   private static user: User;
@@ -24,18 +26,23 @@ class UserProvider {
   }
 
   private checkIfOnline = () => {
-    UserProvider.isOnline = navigator.onLine;
-    let path = window.location.pathname;
-    const id = UserProvider.user?.id;
+    if (UserProvider.isOnline !== navigator.onLine) {
+      UserProvider.isOnline = navigator.onLine;
+      let path = window.location.pathname;
+      const id = UserProvider.user?.id;
 
-    if (UserProvider.isOnline === false) {
-      path = `/workingTimes/${id}`;
+      if (UserProvider.isOnline === false) {
+        path = `/workingTimes/${id}`;
+        useToast().error("Vous êtes hors connexion");
+      } else {
+        OffLineRequests.push();
+      }
+
+      router.push({
+        path,
+        force: true,
+      });
     }
-
-    router.push({
-      path,
-      force: true,
-    });
   };
 
   public isOnline = (): boolean => {

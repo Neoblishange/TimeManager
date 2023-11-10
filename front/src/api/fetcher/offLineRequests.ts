@@ -1,4 +1,5 @@
 import { AxiosRequestConfig } from "axios";
+import { useToast } from "vue-toastification";
 import Fetcher from "./fetcher";
 
 class OffLineRequests {
@@ -9,7 +10,7 @@ class OffLineRequests {
   }
 
   public static add(req: AxiosRequestConfig) {
-    OffLineRequests.load()
+    OffLineRequests.load();
     OffLineRequests.requests.push(req);
     OffLineRequests.save();
   }
@@ -35,6 +36,7 @@ class OffLineRequests {
     Promise.all(reqs).then(() => {
       this.clear();
       window.location.reload();
+      useToast().info("Vous êtes re-connecté");
     });
   }
 }
