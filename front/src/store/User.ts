@@ -1,10 +1,10 @@
 import { useToast } from "vue-toastification";
+import OffLineRequests from "../api/fetcher/offLineRequests";
 import UserAPI from "../api/user.api";
 import router from "../router";
-import EUserRole from "../types/EUserRole";
+import Role from "../types/Roles";
 import Team from "../types/Team";
 import User from "../types/User";
-import OffLineRequests from "../api/fetcher/offLineRequests";
 
 class UserProvider {
   private static user: User;
@@ -123,7 +123,7 @@ class UserProvider {
     UserProvider.save();
   };
 
-  public getRoles = (): EUserRole[] => {
+  public getRoles = (): string[] => {
     if (UserProvider.user.id) return UserProvider.user.roles;
     else {
       UserProvider.loadUser();
@@ -131,23 +131,23 @@ class UserProvider {
     }
   };
 
-  public setRoles = (roles: EUserRole[]) => {
+  public setRoles = (roles: string[]) => {
     UserProvider.user.roles = roles;
     UserProvider.save();
   };
 
   public isEmployee = (): boolean =>
-    UserProvider.user.roles.includes(EUserRole.EMPLOYEE);
+    UserProvider.user.roles.includes(Role.EMPLOYEE);
 
   public isOnlyEmployee = (): boolean =>
-    UserProvider.user.roles[0] === EUserRole.EMPLOYEE &&
+    UserProvider.user.roles[0] === Role.EMPLOYEE &&
     UserProvider.user.roles.length === 1;
 
   public isManager = (): boolean =>
-    UserProvider.user.roles.includes(EUserRole.MANAGER);
+    UserProvider.user.roles.includes(Role.MANAGER);
 
   public isDirector = (): boolean =>
-    UserProvider.user.roles.includes(EUserRole.DIRECTOR);
+    UserProvider.user.roles.includes(Role.DIRECTOR);
 
   public isAuth = (): boolean => {
     return UserProvider.user.authToken.length > 10;
@@ -181,27 +181,25 @@ class UserProvider {
           (typeof value === "number" && Number.isNaN(value));
     }
 
-    // if (isMissingInfo) {
-    //   UserProvider.user = {
-    //     ...(await UserAPI.getUser()).data,
-    //     id: "00000000000000000000000000000000000",
-    //     email: "aaaaa@aaaa.com",
-    //     username: "usernameTEST",
-    //     authToken: UserProvider.user.authToken,
-    //   };
-    // }
-
     UserProvider.save();
   };
 
   public reload = async () => {
-    await UserAPI.getUserWithID(UserProvider.user.id).then((res) => {
-      UserProvider.user = {
-        ...res.data,
-        authToken: UserProvider.user.authToken,
-      };
-      UserProvider.save();
-    });
+    const promises = [
+      await UserAPI.getUserWithID(UserProvider.user.id)
+        .then((res) => {
+          UserProvider.user = {
+            ...res.data,
+            authToken: UserProvider.user.authToken,
+          };
+          UserProvider.save();
+        })
+        .then(async () => {
+          await Role.initRoles();
+        }),
+    ];
+
+    await Promise.all(promises);
   };
 
   private static save = () => {

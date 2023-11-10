@@ -65,19 +65,17 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   const current = routes.find((r) => r.name === to.name) ?? routes[0];
   const user = new UserProvider();
 
-  if (current.needAuth !== user.isAuth()) {
+  if (current.needAuth !== user.isAuth())
     if (user.isAuth()) next("/user");
     else {
       localStorage.clear();
       next("/login");
     }
-  } else {
-    next();
-  }
+  else next();
 });
 
 export default router;
