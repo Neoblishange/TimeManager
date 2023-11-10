@@ -26,7 +26,6 @@ services:
       - db
     environment:
       MIX_ENV: dev
-    command: /app/path/vers/votre/script.sh
 
   front:
     build:
