@@ -15,7 +15,7 @@ COPY mix.exs mix.lock ./
 RUN mix deps.get
 
 # Copiez le script de démarrage
-COPY ./entrypoint.sh .
+COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
 
 # Commande pour démarrer votre application Phoenix avec le script de démarrage
