@@ -57,11 +57,12 @@ defmodule TimemasterWeb.UserController do
     password = Map.get(user_params, "password")
     hashed_password = Bcrypt.hash_pwd_salt(password)
     user_params = Map.put(user_params, "password", hashed_password)
-    roles = Map.get(user_params, "roles")
-    if roles != nil do
-      with {:ok, %User{} = user} <- Accounts.create_user(user_params) do
-        user = Repo.preload(user, [:team, :user_roles])
-          for role_id <- roles do
+    with {:ok, %User{} = user} <- Accounts.create_user(user_params) do
+      user = Repo.preload(user, [:team, :user_roles])
+      roles = Map.get(user_params, "roles")
+      if roles != nil && roles != [] do
+        for role_id <- roles do
+          if role_id != "" && (byte_size(role_id) == 16 && is_bitstring(role_id)) do
             role = Repo.get(Timemaster.Accounts.Roles, role_id)
             case role do
               nil ->
@@ -72,17 +73,22 @@ defmodule TimemasterWeb.UserController do
                 user_roles = %{user_id: user.id, role_id: role.id}
                 {:ok, _} = Accounts.create_user_roles(user_roles)
             end
+          else
+            employee_role = Repo.get_by(Timemaster.Accounts.Roles, name: "employee")
+            user_roles = %{user_id: user.id, role_id: employee_role.id}
+            {:ok, _} = Accounts.create_user_roles(user_roles)
           end
-        user = Repo.get(User, user.id)
-        user = Repo.preload(user, [:team, :user_roles])
-        conn
-        |> put_status(:created)
-        |> render(:show, user: user)
+        end
+      else
+        employee_role = Repo.get_by(Timemaster.Accounts.Roles, name: "employee")
+        user_roles = %{user_id: user.id, role_id: employee_role.id}
+        {:ok, _} = Accounts.create_user_roles(user_roles)
       end
-    else
+      user = Repo.get(User, user.id)
+      user = Repo.preload(user, [:team, :user_roles])
       conn
-      |> put_status(:bad_request)
-      |> json(%{message: "Role is missing"})
+      |> put_status(:created)
+      |> render(:show, user: user)
     end
   end
 
