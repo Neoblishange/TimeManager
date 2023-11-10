@@ -60,17 +60,23 @@ defmodule TimemasterWeb.UserController do
     with {:ok, %User{} = user} <- Accounts.create_user(user_params) do
       user = Repo.preload(user, [:team, :user_roles])
       roles = Map.get(user_params, "roles")
-      if roles != nil do
+      if roles != nil && roles != [] do
         for role_id <- roles do
-          role = Repo.get(Timemaster.Accounts.Roles, role_id)
-          case role do
-            nil ->
-              conn
-              |> put_status(:bad_request)
-              |> json(%{message: "This role does not exist"})
-            _ ->
-              user_roles = %{user_id: user.id, role_id: role.id}
-              {:ok, _} = Accounts.create_user_roles(user_roles)
+          if role_id != "" && (byte_size(role_id) == 16 && is_bitstring(role_id)) do
+            role = Repo.get(Timemaster.Accounts.Roles, role_id)
+            case role do
+              nil ->
+                conn
+                |> put_status(:bad_request)
+                |> json(%{message: "This role does not exist"})
+              _ ->
+                user_roles = %{user_id: user.id, role_id: role.id}
+                {:ok, _} = Accounts.create_user_roles(user_roles)
+            end
+          else
+            employee_role = Repo.get_by(Timemaster.Accounts.Roles, name: "employee")
+            user_roles = %{user_id: user.id, role_id: employee_role.id}
+            {:ok, _} = Accounts.create_user_roles(user_roles)
           end
         end
       else
