@@ -39,10 +39,11 @@ class Fetcher {
     try {
       const response = await axios(options);
       return Fetcher.formatResponse<T>(response, true);
-    } catch (error) {
-      useToast().error(
-        options.method + " request to " + options.url + " failed." + error
-      );
+    } catch (error_) {
+      const error = error_ as any;
+      const errorMsg = JSON.parse(error.request.response).message;
+
+      useToast().error(options.method + " request failed." + errorMsg);
       return this.handleError<T>(error as AxiosError);
     }
   }

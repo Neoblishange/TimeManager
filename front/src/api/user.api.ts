@@ -1,5 +1,5 @@
 import { jwtDecode } from "jwt-decode";
-import EUserRole from "../types/EUserRole";
+import Role from "../types/Roles";
 import User, { UserLogin } from "../types/User";
 import Fetcher from "./fetcher/fetcher";
 import Response from "./fetcher/response";
@@ -18,7 +18,7 @@ class UserAPI {
     this.getAllUsers().then((res) => ({
       ...res,
       data: res.data.filter(
-        (user) => user.roles.length === 2 && user.roles[1] === EUserRole.MANAGER
+        (user) => user.roles.length === 2 && user.roles[1] === Role.MANAGER
       ),
     }));
 
@@ -26,8 +26,7 @@ class UserAPI {
     this.getAllUsers().then((res) => ({
       ...res,
       data: res.data.filter(
-        (user) =>
-          user.roles.length === 1 && user.roles[0] === EUserRole.EMPLOYEE
+        (user) => user.roles.length === 1 && user.roles[0] === Role.EMPLOYEE
       ),
     }));
 
@@ -50,7 +49,7 @@ class UserAPI {
   public static createUser = async (
     email: string,
     username: string,
-    roles: EUserRole[] = [EUserRole.EMPLOYEE],
+    roles: string[] = [Role.EMPLOYEE],
     password: string
   ): Promise<Response<User>> =>
     Fetcher.post<User>("users", {
@@ -67,7 +66,7 @@ class UserAPI {
     Fetcher.post<UserLogin>("login", {
       email,
       password,
-    }).then((res) => {
+    }).then(async (res) => {
       const { email, id, roles, username } = jwtDecode(
         res.data.token
       ) satisfies { [key: string]: any };
@@ -91,13 +90,13 @@ class UserAPI {
   public static setManagerUser = async (id: string): Promise<Response<User>> =>
     Fetcher.put(`users/${id}`, {
       user: {
-        roles: ["employee", "manager"],
+        roles: [Role.EMPLOYEE, Role.MANAGER],
       },
     });
   public static setEmployeeUser = async (id: string): Promise<Response<User>> =>
     Fetcher.put(`users/${id}`, {
       user: {
-        roles: ["employee"],
+        roles: [Role.EMPLOYEE],
       },
     });
 }

@@ -4,3 +4,4 @@ front/.env
 front/node_modules
 front/android/*
 .vscode/settings.json
+front/dist/

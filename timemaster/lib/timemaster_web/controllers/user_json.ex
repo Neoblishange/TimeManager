@@ -28,7 +28,12 @@ defmodule TimemasterWeb.UserJSON do
       username: user.username,
       email: user.email,
       team: user.team,
-      roles: user.user_roles
+      roles: customRoles(user.user_roles)
     }
+  end
+
+  defp customRoles(user_roles) do
+    data = user_roles |> Enum.map(& &1.role_id)
+    data
   end
 end

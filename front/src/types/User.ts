@@ -1,4 +1,3 @@
-import EUserRole from "./EUserRole";
 import Team from "./Team";
 
 type User = {
@@ -6,7 +5,7 @@ type User = {
   email: string;
   authToken: string;
   username: string;
-  roles: EUserRole[];
+  roles: string[];
   team: undefined | Team;
 };
 
@@ -15,7 +14,7 @@ export default User;
 export interface UserLogin {
   email: string;
   id: string;
-  roles: EUserRole[];
+  roles: string[];
   username: string;
   token: string;
 }
