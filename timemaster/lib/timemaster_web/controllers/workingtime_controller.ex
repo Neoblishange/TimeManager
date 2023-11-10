@@ -75,7 +75,7 @@ defmodule TimemasterWeb.WorkingTimeController do
 
   end
 
-  def show(conn, %{"userID" => userID, "id" => id}) do
+  def show(conn, %{"userID" => userID, "workingtimeID" => id}) do
     case Repo.get_by(Timemaster.Accounts.User, id: userID) do
       nil ->
         conn
@@ -88,7 +88,7 @@ defmodule TimemasterWeb.WorkingTimeController do
     end
   end
 
-  def update(conn, %{"id" => id, "workingtime" => workingtime_params}) do
+  def update(conn, %{"workingtimeID" => id, "workingtime" => workingtime_params}) do
     case Repo.get(Workingtime, id) do
       nil ->
         conn
@@ -102,7 +102,7 @@ defmodule TimemasterWeb.WorkingTimeController do
     end
   end
 
-  def delete(conn, %{"id" => id}) do
+  def delete(conn, %{"workingtimeID" => id}) do
     case Repo.get(Workingtime, id) do
       nil ->
         conn

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import UserAPI from "../api/user.api";
-import EUserRole from "../types/EUserRole";
+import Role from "../types/Roles";
 
 const emits = defineEmits<{
   onCreate: [];
@@ -16,7 +16,7 @@ const showConfirmation = ref(false);
 const formData = ref({
   email: "",
   username: "",
-  roles: [] as EUserRole[],
+  roles: [] as string[],
   password: "",
   confirmation: "",
 });
@@ -110,7 +110,7 @@ const loadData = () => {};
                 <input
                   @change="
                     () => {
-                      formData.roles = [EUserRole.EMPLOYEE];
+                      formData.roles = [Role.EMPLOYEE];
                     }
                   "
                   id="employee"
@@ -125,7 +125,7 @@ const loadData = () => {};
                 <input
                   @change="
                     () => {
-                      formData.roles = [EUserRole.EMPLOYEE, EUserRole.MANAGER];
+                      formData.roles = [Role.EMPLOYEE, Role.MANAGER];
                     }
                   "
                   id="manager"
@@ -141,9 +141,9 @@ const loadData = () => {};
                   @change="
                     () => {
                       formData.roles = [
-                        EUserRole.EMPLOYEE,
-                        EUserRole.MANAGER,
-                        EUserRole.DIRECTOR,
+                        Role.EMPLOYEE,
+                        Role.MANAGER,
+                        Role.DIRECTOR,
                       ];
                     }
                   "

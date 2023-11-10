@@ -5,7 +5,7 @@ import EmployeeAdd from "../components/EmployeeAdd.vue";
 import HeaderVue from "../components/HeaderVue.vue";
 import TeamUserGraph from "../components/TeamUserGraph.vue";
 import UserProvider from "../store/User";
-import EUserRole from "../types/EUserRole";
+import Role from "../types/Roles";
 import User from "../types/User";
 
 const users = ref<User[]>([]);
@@ -71,11 +71,11 @@ const tableHeaders = ["Username", "Email", "Équipe", "Rôle"];
                   {{ _user.team?.name ?? "Pas équipe" }}
                 </td>
                 <td class="text-center py-2 px-10">
-                  <div v-if="_user.roles.includes(EUserRole.DIRECTOR)">
+                  <div v-if="_user.roles.includes(Role.DIRECTOR)">
                     Directeur
                   </div>
                   <div
-                    v-else-if="_user.roles.includes(EUserRole.MANAGER)"
+                    v-else-if="_user.roles.includes(Role.MANAGER)"
                     class="flex flex-row"
                   >
                     <button @click="makeEmployee(_user.id)">
@@ -131,7 +131,6 @@ const tableHeaders = ["Username", "Email", "Équipe", "Rôle"];
                   </div>
                 </td>
                 <td class="text-center py-2 px-2 hover:bg-red-400">
-                  
                   <TeamUserGraph :user="_user" />
                   <button
                     @click="deleteUser(_user.id)"
