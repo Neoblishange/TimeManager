@@ -7,9 +7,9 @@ defmodule Timemaster.Repo.Migrations.InsertDefaultData do
   alias Timemaster.Accounts.UserRoles
 
   def change do
-    {:ok, employee_role} = Repo.insert %Roles{name: "employee"}
-    {:ok, manager_role} = Repo.insert %Roles{name: "manager"}
-    {:ok, director_role} = Repo.insert %Roles{name: "director"}
+    {:ok, employee_role} = Repo.insert %Roles{name: Application.get_env(:timemaster, :employee)}
+    {:ok, manager_role} = Repo.insert %Roles{name: Application.get_env(:timemaster, :manager)}
+    {:ok, director_role} = Repo.insert %Roles{name: Application.get_env(:timemaster, :director)}
 
     {:ok, director} = Repo.insert %User{username: "director", email: "director@director.com", password: Bcrypt.hash_pwd_salt("director")}
     Repo.insert %UserRoles{user_id: director.id, role_id: employee_role.id}
