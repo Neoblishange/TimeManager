@@ -22,10 +22,16 @@ defmodule Timemaster.EnsureRolePlug do
                 user_role.name == role_name
               end)
             end)
+            has_director_role = Enum.any?(user_roles, fn user_role ->
+              user_role.name == "director"
+            end)
             if has_matching_role do
               if !Map.get(conn.path_params, "teamID")
                  && Map.get(conn.path_params, "userID")
-                 && Map.get(conn.assigns.claims, "id") != Map.get(conn.path_params, "userID") do
+                 && (
+                    Map.get(conn.assigns.claims, "id") != Map.get(conn.path_params, "userID")
+                    && !has_director_role
+                ) do
                 conn
                 |> forbidden
                 else
