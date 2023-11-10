@@ -66,8 +66,15 @@ defmodule TimemasterWeb.ClockController do
         |> json(%{message: "User not found"})
       user ->
         clock = Repo.get_by(Clock, user_id: userID)
-        clock = Repo.preload(clock, :user)
-        render(conn, :show, clock: clock)
+        case Repo.get_by(Clock, user_id: userID) do
+          nil ->
+            conn
+            |> put_status(:ok)
+            |> json(%{message: "Clock not created yet"})
+          clock ->
+            clock = Repo.preload(clock, :user)
+            render(conn, :show, clock: clock)
+        end
     end
   end
 

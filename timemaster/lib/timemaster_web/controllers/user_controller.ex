@@ -59,14 +59,18 @@ defmodule TimemasterWeb.UserController do
     user_params = Map.put(user_params, "password", hashed_password)
     with {:ok, %User{} = user} <- Accounts.create_user(user_params) do
       user = Repo.preload(user, [:team, :user_roles])
+      employee_role = Repo.get_by(Timemaster.Accounts.Roles, name: "employee")
+      user_roles = %{user_id: user.id, role_id: employee_role.id}
+      {:ok, _} = Accounts.create_user_roles(user_roles)
+      user = Repo.get(User, user.id)
+      user = Repo.preload(user, [:team, :user_roles])
       conn
       |> put_status(:created)
-      |> put_resp_header("location", ~p"/api/users/#{user}")
       |> render(:show, user: user)
     end
   end
 
-  def show(conn, %{"id" => id}) do
+  def show(conn, %{"userID" => id}) do
     case Repo.get(User, id) do
       nil ->
         conn
@@ -78,7 +82,7 @@ defmodule TimemasterWeb.UserController do
     end
   end
 
-  def update(conn, %{"id" => id, "user" => user_params}) do
+  def update(conn, %{"userID" => id, "user" => user_params}) do
     case Repo.get(User, id) do
       nil ->
         conn
@@ -88,20 +92,22 @@ defmodule TimemasterWeb.UserController do
         with {:ok, %User{} = user} <- Accounts.update_user(user, user_params) do
           roles = Map.get(user_params, "roles")
           user = Repo.preload(user, [:team, :user_roles])
-          old_user_roles = Repo.get_by(Timemaster.Accounts.UserRoles, user_id: user.id)
-          if(old_user_roles) do
-            Accounts.delete_user_roles(old_user_roles)
-          end
-          for role_id <- roles do
-            role = Repo.get(Timemaster.Accounts.Roles, role_id)
-            case role do
-              nil ->
-                conn
-                |> put_status(:bad_request)
-                |> json(%{message: "This role does not exist"})
-              _ ->
-                user_roles = %{user_id: user.id, role_id: role.id}
-                {:ok, _} = Accounts.create_user_roles(user_roles)
+          if roles != nil do
+            old_user_roles = Repo.get_by(Timemaster.Accounts.UserRoles, user_id: user.id)
+            for old_user_role <- old_user_roles do
+              Accounts.delete_user_roles(old_user_role)
+            end
+            for role_id <- roles do
+              role = Repo.get(Timemaster.Accounts.Roles, role_id)
+              case role do
+                nil ->
+                  conn
+                  |> put_status(:bad_request)
+                  |> json(%{message: "This role does not exist"})
+                _ ->
+                  user_roles = %{user_id: user.id, role_id: role.id}
+                  {:ok, _} = Accounts.create_user_roles(user_roles)
+              end
             end
           end
           user = Repo.get(User, user.id)
@@ -111,7 +117,7 @@ defmodule TimemasterWeb.UserController do
     end
   end
 
-  def delete(conn, %{"id" => id}) do
+  def delete(conn, %{"userID" => id}) do
     case Repo.get(User, id) do
       nil ->
         conn
