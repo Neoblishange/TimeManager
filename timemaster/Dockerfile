@@ -14,6 +14,7 @@ WORKDIR /app
 # Copiez les fichiers de configuration et installez les dépendances Elixir
 COPY mix.exs mix.lock ./
 RUN mix deps.get
+RUN mix ecto.migrate
 
 # Commande pour démarrer votre application Phoenix
 CMD ["mix","phx.server"]
