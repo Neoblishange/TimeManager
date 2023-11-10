@@ -27,7 +27,6 @@ defmodule TimemasterWeb.Router do
 
   scope "/api", TimemasterWeb do
     pipe_through [:api, :director]
-      get "/users", UserController, :get_user_by_params
       get "/users/all", UserController, :index
       delete "/users", UserController, :delete_all
 
@@ -51,6 +50,7 @@ defmodule TimemasterWeb.Router do
       post "/users", UserController, :create
 
     pipe_through [:api, :employee]
+      get "/users", UserController, :get_user_by_params
       get "/users/:userID", UserController, :show
       put "/users/:userID", UserController, :update
       delete "/users/:userID", UserController, :delete

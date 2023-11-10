@@ -94,8 +94,12 @@ defmodule TimemasterWeb.UserController do
           user = Repo.preload(user, [:team, :user_roles])
           if roles != nil do
             old_user_roles = Repo.get_by(Timemaster.Accounts.UserRoles, user_id: user.id)
-            for old_user_role <- old_user_roles do
-              Accounts.delete_user_roles(old_user_role)
+            if is_list(old_user_roles) do
+              for old_user_role <- old_user_roles do
+                Accounts.delete_user_roles(old_user_role)
+              end
+              else
+                Accounts.delete_user_roles(old_user_roles)
             end
             for role_id <- roles do
               role = Repo.get(Timemaster.Accounts.Roles, role_id)
