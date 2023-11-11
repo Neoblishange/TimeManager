@@ -195,7 +195,11 @@ class UserProvider {
           UserProvider.save();
         })
         .then(async () => {
-          await Role.initRoles();
+          if (UserProvider.user.roles.length > 1) {
+            try {
+              await Role.initRoles();
+            } catch (e) {}
+          }
         }),
     ];
 
