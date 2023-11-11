@@ -29,8 +29,6 @@ defmodule TimemasterWeb.Router do
     pipe_through [:api, :director]
       get "/users/all", UserController, :index
       delete "/users", UserController, :delete_all
-
-    resources "/roles", RolesController, except: [:update, :edit, :delete]
   end
 
   scope "/api", TimemasterWeb do
@@ -63,7 +61,9 @@ defmodule TimemasterWeb.Router do
       delete "/workingtimes/:workingtimeID", WorkingTimeController, :delete
       resources "/workingtimes", WorkingTimeController, except: [:create, :show, :index, :new, :edit, :update, :delete]
 
-    get "/clocks/:userID", ClockController, :user_clock
-    post "/clocks/:userID", ClockController, :create
+      get "/clocks/:userID", ClockController, :user_clock
+      post "/clocks/:userID", ClockController, :create
+
+      resources "/roles", RolesController, except: [:update, :edit, :delete]
   end
 end
