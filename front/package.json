@@ -4,8 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 8081 --host 0.0.0.0",
     "build": "vue-tsc && vite build",
+    "deploy": "http-server dist/ -p 8085",
     "preview": "vite preview",
     "ionic:build": "npm run build",
     "ionic:serve": "npm run dev"
@@ -25,6 +26,7 @@
     "dayjs": "^1.11.10",
     "jwt-decode": "^4.0.0",
     "luxon": "^3.4.3",
+    "http-server": "^14.1.1",
     "moment": "^2.29.4",
     "vue": "^3.3.4",
     "vue-chartjs": "^5.2.0",
@@ -38,7 +40,7 @@
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.4",
     "typescript": "^5.0.2",
-    "vite": "^4.4.5",
+    "vite": "^4.5.0",
     "vue-tsc": "^1.8.5"
   }
 }
