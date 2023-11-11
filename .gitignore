@@ -1,5 +1,8 @@
+.idea
+T-POO-700_theme01_project.pdf
 front/.env
-front/nodes_modules
-front/android
+front/node_modules
+front/android/*
 .vscode/settings.json
 front/dist/
+front/.vite
