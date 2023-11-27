@@ -19,6 +19,7 @@ defmodule TimemasterWeb.Router do
   pipeline :api do
     plug :accepts, ["json"]
     plug Timemaster.JwtAuthPlug
+    plug CORSPlug
   end
 
   pipeline :no_auth do
