@@ -6,3 +6,5 @@ front/android/*
 .vscode/settings.json
 front/dist/
 front/.vite
+/.idea/
+/.github/
